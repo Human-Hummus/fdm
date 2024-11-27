@@ -1,5 +1,10 @@
 nimvar = -d:release #--opt:none
 cc = tcc
+
+install:build
+	cp built/executable /usr/bin/fdm
+	cp -rv built/functions /usr/share/FDM_functions
+
 build:dirs build_functions
 	nim compile $(nimvar) --out=built/executable main.nim
 
