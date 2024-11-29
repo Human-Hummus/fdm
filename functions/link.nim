@@ -4,10 +4,15 @@ var
   text = ""
   link = ""
   on_link = true
-
+  skip_next = false
 for c in paramStr(1):
   if on_link:
-    if c == ':':
+    if c == '\\':
+      skip_next = true
+      continue
+    if skip_next:
+      link.add c
+    if c == '|':
       on_link = false
     else:
       link.add c

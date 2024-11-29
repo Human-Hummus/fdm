@@ -46,7 +46,7 @@ if text == "":stdout.styledWriteLine(fgYellow, "WARNING: no input file provided;
 format = format.toLowerAscii()
 
 var vars:seq[array[2, string]] = @[
-    ["directory", os.getCurrentDir()],
+    ["directory", "./"],
     ["format", format]]
 
 writeFile(output, remove_bs(process_functions(text)))
