@@ -68,10 +68,15 @@ proc vars_as_str():string =
     toret.add "|"
   return toret
 proc run_function(name,content:string):string =
+  if DEBUG: echo name
   var function = FUNCTIONS_DIR & name
   if not fileExists(function):function = FUNCTIONS_DIR & format & "/" & name
   if not fileExists(function):error "no function \"" & name & "\""
-  let output = execProcess(function, args=[content, vars_as_str()], options={poUsePath})
+  var output = execProcess(function, args=[content, vars_as_str()], options={poUsePath})
+  if DEBUG: echo vars_as_str()
+  if output.len()>0 and output[^1] == '\n':
+    output.delete(output.len()-1, output.len()-1)
+  if DEBUG: echo "output: " & output & "\n\n"
   return output
 
 proc process_functions(text:string):string =
@@ -123,6 +128,8 @@ proc process_functions(text:string):string =
 
         content = process_functions(content)
         if is_var:
+          if DEBUG: echo "is var"
+          if DEBUG: echo name
           add_var(name, content)
         else:
           content = run_function(name, content)

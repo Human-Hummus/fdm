@@ -1,5 +1,6 @@
 include default
 import std/osproc
+echo paramStr(2)
 var
   past_dir = false
   content = ""

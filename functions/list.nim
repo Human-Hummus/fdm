@@ -14,7 +14,8 @@ while x < text.len():
     continue
   if text[x] == '\\' and x+1 < text.len():
     x+=1
-    curli.add "\\" & text[x+1]
+    curli.add "\\" & text[x]
+    x+=1
     continue
   curli.add text[x]
   x+=1
