@@ -20,7 +20,7 @@ while x < text.len():
     if cur != "":
       currow.add cur
       cur = ""
-    if currow.len() > 1:
+    if currow.len() > 0:
       table.add currow
     currow = @[]
   else:
@@ -29,8 +29,20 @@ while x < text.len():
 cur = cur.strip()
 if cur != "":
   currow.add cur
-if currow.len() > 1:
+if currow.len() > 0:
   table.add currow
+
+var max_len = 0
+for i in table:
+  if i.len() > max_len:max_len = i.len()
+x = 0
+while x < table.len():
+  var y = 0
+  while y<max_len:
+    if y>= table[x].len():
+      table[x].add ""
+    y+=1
+  x+=1
 
 cur = ""
 
