@@ -20,7 +20,7 @@ if image_path == "":
   image_width=""
 
 if format == "html":
-  stdout.write "<img "
+  stdout.write "<img " & html_style()
   if image_width != "":
     stdout.write "width=" & image_width & " "
   

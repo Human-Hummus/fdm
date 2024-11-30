@@ -58,24 +58,27 @@ proc add_var(name,content:string) =
       return
     x+=1
   vars.add [name, content]
-proc vars_as_str():string =
+
+#parameters or variables as string
+proc pov_as_str(content:seq[array[2,string]]):string =
   var toret = ""
-  for v in vars:
+  for v in content:
     toret.add v[0] & ":"
     for c in v[1]:
       if c in ":|":toret.add "\\"
       toret.add c
     toret.add "|"
   return toret
-proc run_function(name,content:string):string =
+proc run_function(name,content:string, parameters:seq[array[2,string]]):string =
   if DEBUG: echo name
   var function = FUNCTIONS_DIR & name
   if not fileExists(function):function = FUNCTIONS_DIR & format & "/" & name
   if not fileExists(function):error "no function \"" & name & "\""
-  var output = execProcess(function, args=[content, vars_as_str()], options={poUsePath})
-  if DEBUG: echo vars_as_str()
-  if output.len()>0 and output[^1] == '\n':
-    output.delete(output.len()-1, output.len()-1)
+  var output = execProcess(function, args=[content, pov_as_str(vars), pov_as_str(parameters)], options={poUsePath})
+  if DEBUG: echo "vars; \"" & pov_as_str(vars) & "\""
+  if DEBUG: echo "params \"" & pov_as_str(parameters) & "\""
+  if DEBUG: echo "content \"" & content & "\""
+  if output.len()>0 and output[^1] == '\n':output.delete(output.len()-1, output.len()-1)
   if DEBUG: echo "output: " & output & "\n\n"
   return output
 
@@ -96,17 +99,50 @@ proc process_functions(text:string):string =
           content = ""
           is_var = false
           depth = 1
+          params:seq[array[2,string]] = @[]
 
-        while text[x] notin ":=}":
+        while text[x] notin ":=}()":
           if text[x] notin "\\ ":name.add text[x]
           x+=1
           if x == text.len():error("text for function \"" & name & "\" terminates before name")
 
         if text[x] == ':':
           x+=1
-        if text[x] == '=':
+        elif text[x] == '=':
           x+=1
           is_var = true
+        elif text[x] == ')':
+          error("Parameters terminated before starting")
+        elif text[x] == '(':
+          x+=1
+          var
+            pcontent = ""
+            pname = ""
+            on_pname = true
+          while text[x] != ')':
+            if text[x] == '=':
+              if pcontent != "":
+                error("parameter " & pname & " in function " & name & " has two equal signs.")
+              if pname == "":
+                error("parameter in function " & name & " has no name.")
+              on_pname = false
+            elif text[x] == ';':
+              if pname == "":
+                error("parameter in function " & name & " has no name.")
+              params.add [pname, pcontent]
+              on_pname = true
+              pname = ""
+              pcontent = ""
+            else:
+              if on_pname:
+                pname.add text[x]
+              else:
+                pcontent.add text[x]
+            x+=1
+          x+=1
+          if pname != "":params.add [pname, pcontent]
+        if text[x] == ':':x+=1
+        if x >= text.len(): error("function " & name & "terminates before parameters are finished")
 
         while x < text.len():
           if text[x] == '\\':
@@ -132,7 +168,7 @@ proc process_functions(text:string):string =
           if DEBUG: echo name
           add_var(name, content)
         else:
-          content = run_function(name, content)
+          content = run_function(name, content, params)
           toret.add process_functions(content)
         x-=1
       else:

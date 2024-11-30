@@ -1,6 +1,6 @@
-nimvar = -d:release -d:danger -d:lto -d:strip 
-#nimvar = --opt:none 
-funcopt = --mm:none #functions have no memory management, they're run for short times, so it's a waste to bother with it.
+#nimvar = -d:release -d:danger -d:lto -d:strip 
+nimvar = --opt:none 
+funcopt = #--mm:none #functions have no memory management, they're run for short times, so it's a waste to bother with it.
 
 
 install:build

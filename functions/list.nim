@@ -26,7 +26,7 @@ if curli != "":
 
 
 
-if format == "html":stdout.write "<ul>"
+if format == "html":stdout.write "<ul "&html_style()&">"
 for item in litems:
   if format == "markdown":
     stdout.write "\n\t- " & item.replace("\n", "\n\t")

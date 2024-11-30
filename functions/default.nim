@@ -25,6 +25,43 @@ proc get_var*(var_name:string):string =
     x+=1
   return ""
 
+proc get_param*(var_name:string):string =
+  var
+    p = paramStr(3)
+    x = 0
+    content = ""
+    name = ""
+    on_name = true
+  while x < p.len():
+    if p[x] == '\\':
+      x+=1
+      content.add(p[x])
+    elif p[x] == ':':
+      on_name = false
+    elif p[x] == '|':
+      on_name=true
+      if name == var_name:return content
+      content = ""
+      name = ""
+    else:
+      if on_name:name.add(p[x])
+      else:content.add(p[x])
+    x+=1
+  return ""
+
+proc html_style():string =
+  var toret = "style=\""
+  for i in HTML_STYLE_TAGS:
+    var p = get_param(i)
+    if p != "":
+      toret.add i & ":" & p & ";"
+  toret.add "\""
+  for i in HTML_TAGS:
+    var p = get_param(i)
+    if p != "":
+      toret.add " " & i & "=\"" & p & "\" "
+  return toret
+
 proc single_spaced*(text:string): string =
   var o = "\t"
 

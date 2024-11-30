@@ -1,6 +1,5 @@
 include default
 import std/osproc
-echo paramStr(2)
 var
   past_dir = false
   content = ""
@@ -24,7 +23,5 @@ if not fileExists(dir):
   stderr.write "NO FUNCTION EXISTS: " & dir
   quit(0)
 
-echo dir
-echo paramStr(2)
 let output = execProcess(dir, args=[content, paramStr(2)], options={poUsePath})
 stdout.write output
