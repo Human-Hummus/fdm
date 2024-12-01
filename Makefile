@@ -43,6 +43,7 @@ build_html:
 	nim compile $(nimvar) $(funcopt) --out=built/functions/html/table				functions/table.nim
 	nim compile $(nimvar) $(funcopt) --out=built/functions/html/code				functions/code.nim
 	nim compile $(nimvar) $(funcopt) --out=built/functions/html/single_space		functions/single_space.nim
+	nim compile $(nimvar) $(funcopt) --out=built/functions/html/div					functions/div.nim
 
 build_markdown:
 	echo -e "const format = \"markdown\"" > functions/format.nim
@@ -64,6 +65,7 @@ build_markdown:
 	nim compile $(nimvar) $(funcopt) --out=built/functions/markdown/table			functions/table.nim
 	nim compile $(nimvar) $(funcopt) --out=built/functions/markdown/code			functions/code.nim
 	nim compile $(nimvar) $(funcopt) --out=built/functions/markdown/single_space	functions/single_space.nim
+	nim compile $(nimvar) $(funcopt) --out=built/functions/markdown/div				functions/div.nim
 	cp built/functions/markdown/* built/functions/md
 
 	
