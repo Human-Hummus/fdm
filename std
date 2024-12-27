@@ -29,7 +29,7 @@ func h1(todo){
 		`<h1>`$todo`</h1>`
 	}
 	if (eql($format;markdown)){
-		`# `$todo
+		`# `$todo`\n`
 	}
 }
 func h2(todo){
@@ -37,7 +37,7 @@ func h2(todo){
 		`<h2>`$todo`</h2>`
 	}
 	if (eql($format;markdown)){
-		`## `$todo
+		`## `$todo`\n`
 	}
 }
 
@@ -46,23 +46,8 @@ func h1(todo){
 		`<h3>`$todo`</h3>`
 	}
 	if (eql($format;markdown)){
-		`### `$todo
+		`### `$todo`\n`
 	}
-}
-
-func not(var){
-	if (eql($var;false)){
-		true
-	}
-	if (eql($var;true)){
-		false
-	}
-}
-
-func is_defined(var){
-	if (eql($var;null)){false}
-	if (not(eql($var;null))){true}
-
 }
 
 func newline(){
@@ -70,8 +55,7 @@ func newline(){
 		`<br>`
 	}
 	if (eql($format;markdown)){
-`
-`
+		`\n`
 	}
 }
 
@@ -93,3 +77,6 @@ func body(){
 	
 }
 
+func link(link){
+	`<a href="`$link`">`$input`</a>`
+}

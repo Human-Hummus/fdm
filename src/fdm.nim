@@ -11,30 +11,31 @@ when isMainModule:
       of "-i", "--input":
         x+=1
         if not (x < args.len):
-          fatal("Input not followed by argument")
+          fatal "Input not followed by argument"
         filein = args[x]
         
       of "-o", "--output":
         x+=1
         if not (x < args.len):
-          fatal("Output not followed by argument")
+          fatal "Output not followed by argument"
         fileout = args[x]
       of "-f", "--format":
         x+=1
         if not (x < args.len):
-          fatal("format not followed by argument")
+          fatal "format not followed by argument"
         format = args[x]
     x+=1
   if filein.len < 1:
     fatal("No input file")
   if format in @["HTML", "html", "htm", "HTM"]:
     format = "html"
-  if format in @["MD", "md", "Markdown", "markdown"]:
+  elif format in @["MD", "md", "Markdown", "markdown"]:
     format = "markdown"
+  else:
+    fatal "Unknown format"
   if fileout.len < 1:
     fileout = "/dev/stdout"
-  var 
-    tokens = tokenizer("$format="&format&";@" & filein & ";")
-    parsed =  parser(tokens)
-    (executed, _) = compile_text(parsed, @[])
+  var tokens = tokenizer("@" & filein & ";")
+  var parsed =  parser(tokens)
+  var (executed, _) = compile_text(parsed, @[@["format", format]])
   writeFile(fileout, executed) #missing propper error
