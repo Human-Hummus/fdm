@@ -1,0 +1,95 @@
+func b(todo){
+	if (eql($format;html)){
+		`<b>`$todo`</b>`
+	}
+	if (eql($format;markdown)){
+		`**`$todo`**`
+	}
+}
+func i(todo){
+	if (eql($format;html)){
+		`<em>`$todo`</em>`
+	}
+	if (eql($format;markdown)){
+		`*`$todo`*`
+	}
+}
+
+func div(style;class){
+	if (eql($format;html)){
+		`<div class="`$class`" style="`$style`">`$input`</div>`
+	}
+	if (eql($format;markdown)){
+		$input
+	}
+}
+
+func h1(todo){
+	if (eql($format;html)){
+		`<h1>`$todo`</h1>`
+	}
+	if (eql($format;markdown)){
+		`# `$todo
+	}
+}
+func h2(todo){
+	if (eql($format;html)){
+		`<h2>`$todo`</h2>`
+	}
+	if (eql($format;markdown)){
+		`## `$todo
+	}
+}
+
+func h1(todo){
+	if (eql($format;html)){
+		`<h3>`$todo`</h3>`
+	}
+	if (eql($format;markdown)){
+		`### `$todo
+	}
+}
+
+func not(var){
+	if (eql($var;false)){
+		true
+	}
+	if (eql($var;true)){
+		false
+	}
+}
+
+func is_defined(var){
+	if (eql($var;null)){false}
+	if (not(eql($var;null))){true}
+
+}
+
+func newline(){
+	if (eql($format;html)){
+		`<br>`
+	}
+	if (eql($format;markdown)){
+`
+`
+	}
+}
+
+func body(){
+	if (eql($format;html)){
+		`<!DOCTYPE HTML>`
+		`<html>`
+			`<head>`
+				if (is_defined($title)){`<title>`$title`</title>`}
+			`</head>`
+			`<body>`
+				$input
+			`</body>`
+		`</html>`
+	}
+	if (eql($format;markdown)){
+		$input
+	}
+	
+}
+

@@ -1,0 +1,6 @@
+@std;
+$title=`FDM - Functional Document Maker`;
+body{
+	`The functions in FDM are really more like macros, tbh`
+}
+
