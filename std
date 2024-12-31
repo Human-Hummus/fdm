@@ -1,66 +1,66 @@
-func b(todo){
-	if (eql($format;html)){
-		`<b>`$todo`</b>`
+func b(){
+	if (eql($format, html)){
+		`<b>`$input`</b>`
 	}
-	if (eql($format;markdown)){
-		`**`$todo`**`
+	if (eql($format, markdown)){
+		`**`$input`**`
 	}
 }
-func i(todo){
-	if (eql($format;html)){
-		`<em>`$todo`</em>`
+func i(){
+	if (eql($format, html)){
+		`<em>`$input`</em>`
 	}
-	if (eql($format;markdown)){
-		`*`$todo`*`
+	if (eql($format, markdown)){
+		`*`$input`*`
 	}
 }
 
-func div(style;class){
-	if (eql($format;html)){
+func div(style,class){
+	if (eql($format, html)){
 		`<div class="`$class`" style="`$style`">`$input`</div>`
 	}
-	if (eql($format;markdown)){
+	if (eql($format, markdown)){
 		$input
 	}
 }
 
-func h1(todo){
-	if (eql($format;html)){
-		`<h1>`$todo`</h1>`
+func h1(){
+	if (eql($format, html)){
+		`<h1>`$input`</h1>`
 	}
-	if (eql($format;markdown)){
-		`# `$todo`\n`
+	if (eql($format, markdown)){
+		`# `$input`\n`
 	}
 }
-func h2(todo){
-	if (eql($format;html)){
-		`<h2>`$todo`</h2>`
+func h2(){
+	if (eql($format, html)){
+		`<h2>`$input`</h2>`
 	}
-	if (eql($format;markdown)){
-		`## `$todo`\n`
+	if (eql($format, markdown)){
+		`## `$input`\n`
 	}
 }
 
-func h1(todo){
-	if (eql($format;html)){
-		`<h3>`$todo`</h3>`
+func h1(){
+	if (eql($format, html)){
+		`<h3>`$input`</h3>`
 	}
-	if (eql($format;markdown)){
-		`### `$todo`\n`
+	if (eql($format, markdown)){
+		`### `$input`\n`
 	}
 }
 
 func newline(){
-	if (eql($format;html)){
+	if (eql($format, html)){
 		`<br>`
 	}
-	if (eql($format;markdown)){
+	if (eql($format, markdown)){
 		`\n`
 	}
 }
 
 func body(){
-	if (eql($format;html)){
+	if (eql($format, html)){
 		`<!DOCTYPE HTML>`
 		`<html>`
 			`<head>`
@@ -71,7 +71,7 @@ func body(){
 			`</body>`
 		`</html>`
 	}
-	if (eql($format;markdown)){
+	if (eql($format, markdown)){
 		$input
 	}
 	
@@ -79,4 +79,36 @@ func body(){
 
 func link(link){
 	`<a href="`$link`">`$input`</a>`
+}
+
+func plaintext(){
+	$plaintext_iter=0;
+	while (not(eql($plaintext_iter, len($input)))){
+		if (eql($input[$plaintext_iter], `\n`)){
+			newline()
+		}
+		else{
+			$input[$plaintext_iter]
+		}
+		$plaintext_iter=add($plaintext_iter, 1);
+	}
+}
+
+func p(){
+	$paragraph_iter=0;
+	$output=``;
+	while (not(eql($paragraph_iter, len($input)))){
+		if (or(eql($input[$paragraph_iter], `\n`), eql($input[$paragraph_iter], ` `), eql($input[$paragraph_iter], `\t`))){
+			if (not(eql(len($output), 0))){
+				if (not(eql($output[add(len($output), `-1`)], ` `))){
+					$output=$output ` `;
+				}
+			}
+		}
+		else{
+			$output = $output $input[$paragraph_iter];
+		}
+		$paragraph_iter=add($paragraph_iter, 1);
+	}
+	$output
 }

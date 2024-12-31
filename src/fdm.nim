@@ -35,7 +35,7 @@ when isMainModule:
     fatal "Unknown format"
   if fileout.len < 1:
     fileout = "/dev/stdout"
-  var tokens = tokenizer("@" & filein & ";")
+  var tokens = tokenizer("@" & filein & ";", "head")
   var parsed =  parser(tokens)
   var (executed, _) = compile_text(parsed, @[@["format", format]])
   writeFile(fileout, executed) #missing propper error
