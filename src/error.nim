@@ -5,5 +5,4 @@ proc fatal*(text:string) =
   
 proc warn*(text:string) =
   stderr.styledWriteLine(fgyellow, "warning: " & text, fgdefault)
-  quit 1
   

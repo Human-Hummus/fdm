@@ -2,6 +2,22 @@
 $title=`FDM - Functional Document Maker`;
 body{
 	h1{$title}
-	p{`The functions in FDM are really more like macros, tbh
+	plaintext{`The functions in FDM are really more like macros, tbh
 	FDM, standing for Functional Document Maker (creative, I know), is a document maker that is more of a programming language than any other document fomat`}
+	h1{`Available functions`}
+	h2{`Built-in functions`}
+	table(
+		row(plaintext{`signature`}, plaintext{`explaination`}),
+		row(plaintext{`table(<rows>)`}, plaintext{`Structure for a table make a table like follows table(row(a,b,c),row(d,e,f)).`}),
+		row(plaintext{`row(<items>)`}, plaintext{`used in table() as described above`}),
+		row(plaintext{`list(<items>)`}, plaintext{`returns the arguments organized as a list`}),
+		row(plaintext{`if(<true or false>){<content>}`},plaintext{`checks if the argument provided is true, and if it is, it'll return <content>`}),
+		row(plaintext{`else{<content>}`},plaintext{`Returns <content> if the above if statement and elif statements are false.`}),
+		row(plaintext{`sum(<items>)`}, plaintext{`Adds numbers within and returns the value. returns ERROR if the inner values aren't numbers. Must be integers.`}),
+	)
+	h2{`standard library functions`}
+	table(
+		row(plaintext{`link(<URL>){<content>}`}, plaintext{`Makes a link to <URL> with <content> as the text`})
+	)
+	list(a,b,c)
 }

@@ -29,7 +29,7 @@ func h1(){
 		`<h1>`$input`</h1>`
 	}
 	if (eql($format, markdown)){
-		`# `$input`\n`
+		`\n# `$input`\n`
 	}
 }
 func h2(){
@@ -37,16 +37,16 @@ func h2(){
 		`<h2>`$input`</h2>`
 	}
 	if (eql($format, markdown)){
-		`## `$input`\n`
+		`\n## `$input`\n`
 	}
 }
 
-func h1(){
+func h3(){
 	if (eql($format, html)){
 		`<h3>`$input`</h3>`
 	}
 	if (eql($format, markdown)){
-		`### `$input`\n`
+		`\n### `$input`\n`
 	}
 }
 
@@ -78,19 +78,30 @@ func body(){
 }
 
 func link(link){
-	`<a href="`$link`">`$input`</a>`
+	if (eql($format, html)){
+		`<a href="`$link`">`$input`</a>`
+	}
+	if (eql($format; markdown)){
+		
+	}
 }
 
 func plaintext(){
 	$plaintext_iter=0;
 	while (not(eql($plaintext_iter, len($input)))){
+	print($plaintext_iter N len($input))
+	print($input)
+	print($input[$plaintext_iter])
 		if (eql($input[$plaintext_iter], `\n`)){
 			newline()
+		}
+		elif (and(eql(format, "markdown"), eql($input[$plaintext_iter], `\\`))){
+			`\\\\`
 		}
 		else{
 			$input[$plaintext_iter]
 		}
-		$plaintext_iter=add($plaintext_iter, 1);
+		$plaintext_iter=sum($plaintext_iter, 1);
 	}
 }
 
@@ -100,7 +111,7 @@ func p(){
 	while (not(eql($paragraph_iter, len($input)))){
 		if (or(eql($input[$paragraph_iter], `\n`), eql($input[$paragraph_iter], ` `), eql($input[$paragraph_iter], `\t`))){
 			if (not(eql(len($output), 0))){
-				if (not(eql($output[add(len($output), `-1`)], ` `))){
+				if (not(eql($output[sum(len($output), `-1`)], ` `))){
 					$output=$output ` `;
 				}
 			}
@@ -108,7 +119,10 @@ func p(){
 		else{
 			$output = $output $input[$paragraph_iter];
 		}
-		$paragraph_iter=add($paragraph_iter, 1);
+		$paragraph_iter=sum($paragraph_iter, 1);
+	}
+	if (eql($format, markdown)){
+		$output = `\n\n`$output`\n\n`;
 	}
 	$output
 }

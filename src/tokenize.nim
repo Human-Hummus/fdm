@@ -12,7 +12,7 @@ proc tokenizer*(input, filename:string):seq[token] =
   var
     x = 0
     output:seq[token] = @[]
-    line_number = 0
+    line_number = 1
   while x < input.len():
     if input[x] == '@':
       x += 1
@@ -44,9 +44,9 @@ proc tokenizer*(input, filename:string):seq[token] =
       output.add token(kind:tokentype.comma,value:",", pos:filename & ":" & $line_number)
 
     elif input[x] == '$':
-      output.add token(kind:tokentype.variable,value:"$", pos:filename & ":" & $line_number)    
+      output.add token(kind:tokentype.variable,value:"$", pos:filename & ":" & $line_number)
     elif input[x] == '=':
-      output.add token(kind:tokentype.equals,value:"=", pos:filename & ":" & $line_number)    
+      output.add token(kind:tokentype.equals,value:"=", pos:filename & ":" & $line_number)
     elif input[x] == '`':
       x+=1 
       var buffer = ""
