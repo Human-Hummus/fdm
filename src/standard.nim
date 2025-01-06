@@ -75,6 +75,7 @@ func body(){
 		`<html>`
 			`<head>`
 				if (is_defined($title)){`<title>`$title`</title>`}
+				if (is_defined($favicon)){`<link rel="icon" type="image/x-icon" href="`$favicon`">`}
 			`</head>`
 			`<body>`
 				$input
@@ -97,7 +98,7 @@ func link(link){
 }
 func center(){
 	if (eql($format, html)){
-		div(style=`text-align=center`){$input}
+		div(style=`text-align:center;margin 0 auto;`){$input}
 	}
 }
 
@@ -117,11 +118,6 @@ func plaintext(){
 		$plaintext_iter=sum($plaintext_iter, 1);
 	}
 }
-
-func center(){
-	div(style=`text-align=center;`){$input}
-}
-
 func p(){
 	$paragraph_iter=0;
 	$output=``;

@@ -1,3 +1,4 @@
+@readme.fdm;
 func test(def){
 	print($def)
 }

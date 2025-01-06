@@ -9,6 +9,14 @@ type
     value*:string
     pos*:string
 
+proc get_path(filename:string):string=
+  var x = filename.len-1
+  while x > 0 and filename[x] != '/':
+    x-=1
+  if filename[x] == '/':
+    return filename[0..x]
+  return ""
+
 proc tokenizer*(input, filename:string):seq[token] =
   var
     x = 0
@@ -29,7 +37,7 @@ proc tokenizer*(input, filename:string):seq[token] =
       if buffer == "std":
         filecontents = stdlib
       else:
-        filecontents = readFile(buffer)
+        filecontents = readFile(get_path(filename) & buffer)
       output = concat(output, tokenizer(filecontents, buffer));
     elif input[x] in IdentChars:
       var buffer = ""
@@ -54,6 +62,7 @@ proc tokenizer*(input, filename:string):seq[token] =
     elif input[x] == '=':
       output.add token(kind:tokentype.equals,value:"=", pos:filename & ":" & $line_number)
     elif input[x] == '`':
+      var starts_at = filename & ":" & $line_number
       x+=1 
       var buffer = ""
       while x < input.len and input[x] != '`':
@@ -73,9 +82,10 @@ proc tokenizer*(input, filename:string):seq[token] =
           buffer.add input[x]
         x+=1
       if x == input.len:
-        fatal "Unterminated string"
+        fatal "Unterminated string " & starts_at
       output.add token(kind:tokentype.text,value:buffer, pos:filename & ":" & $line_number)
     elif input[x] == '"':
+      var starts_at = filename & ":" & $line_number
       x+=1 
       var buffer = ""
       while x < input.len and input[x] != '"':
@@ -95,7 +105,7 @@ proc tokenizer*(input, filename:string):seq[token] =
           buffer.add input[x]
         x+=1
       if x == input.len:
-        fatal "Unterminated string"
+        fatal "Unterminated string " & starts_at
       output.add token(kind:tokentype.text,value:buffer, pos:filename & ":" & $line_number)
 
     elif input[x] == '\n':
