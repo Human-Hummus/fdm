@@ -1,6 +1,16 @@
+const stdlib = """
+func style_and_class(){
+	if (is_defined($class)){
+		` class="`$class`" `
+	}
+	if (is_defined($style)){
+		` style="`$style`" `
+	}
+}
+
 func b(){
 	if (eql($format, html)){
-		`<b>`$input`</b>`
+		`<b`style_and_class()`>`$input`</b>`
 	}
 	if (eql($format, markdown)){
 		`**`$input`**`
@@ -8,16 +18,16 @@ func b(){
 }
 func i(){
 	if (eql($format, html)){
-		`<em>`$input`</em>`
+		`<em`style_and_class()`>`$input`</em>`
 	}
 	if (eql($format, markdown)){
 		`*`$input`*`
 	}
 }
 
-func div(style,class){
+func div(){
 	if (eql($format, html)){
-		`<div class="`$class`" style="`$style`">`$input`</div>`
+		`<div`style_and_class()`>`$input`</div>`
 	}
 	if (eql($format, markdown)){
 		$input
@@ -26,7 +36,7 @@ func div(style,class){
 
 func h1(){
 	if (eql($format, html)){
-		`<h1>`$input`</h1>`
+		`<h1`style_and_class()`>`$input`</h1>`
 	}
 	if (eql($format, markdown)){
 		`\n# `$input`\n`
@@ -34,7 +44,7 @@ func h1(){
 }
 func h2(){
 	if (eql($format, html)){
-		`<h2>`$input`</h2>`
+		`<h2`style_and_class()`>`$input`</h2>`
 	}
 	if (eql($format, markdown)){
 		`\n## `$input`\n`
@@ -43,7 +53,7 @@ func h2(){
 
 func h3(){
 	if (eql($format, html)){
-		`<h3>`$input`</h3>`
+		`<h3`style_and_class()`>`$input`</h3>`
 	}
 	if (eql($format, markdown)){
 		`\n### `$input`\n`
@@ -79,22 +89,25 @@ func body(){
 
 func link(link){
 	if (eql($format, html)){
-		`<a href="`$link`">`$input`</a>`
+		`<a href="`$link`"`style_and_class()`>`$input`</a>`
 	}
-	if (eql($format; markdown)){
+	if (eql($format, markdown)){
 		
+	}
+}
+func center(){
+	if (eql($format, html)){
+		div(style=`text-align=center`){$input}
 	}
 }
 
 func plaintext(){
 	$plaintext_iter=0;
 	while (not(eql($plaintext_iter, len($input)))){
-	print($plaintext_iter N len($input))
-	print($input)
-	print($input[$plaintext_iter])
 		if (eql($input[$plaintext_iter], `\n`)){
 			newline()
 		}
+
 		elif (and(eql(format, "markdown"), eql($input[$plaintext_iter], `\\`))){
 			`\\\\`
 		}
@@ -105,9 +118,16 @@ func plaintext(){
 	}
 }
 
+func center(){
+	div(style=`text-align=center;`){$input}
+}
+
 func p(){
 	$paragraph_iter=0;
 	$output=``;
+	if (eql(format,html)){
+		$output=$output`<p>`;
+	}
 	while (not(eql($paragraph_iter, len($input)))){
 		if (or(eql($input[$paragraph_iter], `\n`), eql($input[$paragraph_iter], ` `), eql($input[$paragraph_iter], `\t`))){
 			if (not(eql(len($output), 0))){
@@ -124,5 +144,9 @@ func p(){
 	if (eql($format, markdown)){
 		$output = `\n\n`$output`\n\n`;
 	}
+	if (eql(format,html)){
+		$output=$output`</p>`;
+	}
 	$output
 }
+"""

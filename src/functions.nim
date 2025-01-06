@@ -8,9 +8,9 @@ proc or_function*(input:node, vars:seq[seq[string]]):(string, seq[seq[string]])=
     updated_vars = vars
   if input.fncontents.len != 0:
     warn "or function has function contents. These will be ignored. " & input.pos
-  for item in input.subvalues:
+  for item in input.fnvars:
     var got = ""
-    (got, updated_vars) = compile_text(@[item], updated_vars)
+    (got, updated_vars) = compile_text(item.content, updated_vars)
     if got == "true":
       return ("true", updated_vars)
   return ("false", updated_vars)
@@ -18,13 +18,13 @@ proc or_function*(input:node, vars:seq[seq[string]]):(string, seq[seq[string]])=
 proc equals*(input:node, vars:seq[seq[string]]):(string, seq[seq[string]])=
   var
     updated_vars = vars
-  if input.subvalues.len != 2:
+  if input.fnvars.len != 2:
     fatal "illegal eql statement; got " & $input.subvalues.len & " arguments instead of 2 " & input.pos
   var 
     a = ""
     b = ""
-  (a, updated_vars) = compile_text(@[input.subvalues[0]], updated_vars) 
-  (b, updated_vars) = compile_text(@[input.subvalues[1]], updated_vars) 
+  (a, updated_vars) = compile_text(input.fnvars[0].content, updated_vars) 
+  (b, updated_vars) = compile_text(input.fnvars[1].content, updated_vars) 
   if a == b:
     return ("true", updated_vars)
   return ("false", updated_vars)
@@ -32,9 +32,9 @@ proc sum_function*(input:node, vars:seq[seq[string]]):(string, seq[seq[string]])
   var 
     updated_vars = vars
     total = 0
-  for item in input.subvalues:
+  for item in input.fnvars:
     var got = ""
-    (got, updated_vars) = compile_text(@[item], updated_vars)
+    (got, updated_vars) = compile_text(item.content, updated_vars)
     try:
       total+=parseInt(got)
     except:
@@ -52,17 +52,17 @@ proc table*(input:node,vars:seq[seq[string]]):(string,seq[seq[string]])=
     output.add "<table>"
   if format == "markdown":
     output.add "\n"
-  for row_generic in input.subvalues:
+  for row_generic in input.fnvars:
     var items = 0
     if format == "html":
       output.add "<tr>"
-    if row_generic.subvalues.len != 1 or row_generic.subvalues[0].name != "row":
-      warn "Skipping row " & row_generic.pos
+    if row_generic.content.len != 1 or row_generic.content[0].name != "row":
+      warn "Skipping row " & input.pos
       continue
-    var row = row_generic.subvalues[0]
-    for item in row.subvalues:
+    var row = row_generic.content[0]
+    for item in row.fnvars:
       items+=1
-      (got, updated_vars) = compile_text(@[item], updated_vars)
+      (got, updated_vars) = compile_text(item.content, updated_vars)
       if format == "html":
         output.add "<td>" & got & "</td>"
       if format == "markdown":
@@ -91,8 +91,8 @@ proc list*(input:node,vars:seq[seq[string]]):(string,seq[seq[string]])=
     output.add "<ul>"
   if format == "markdown":
     output.add "\n"
-  for item in input.subvalues:
-    (got, updated_vars) = compile_text(@[item], updated_vars)
+  for item in input.fnvars:
+    (got, updated_vars) = compile_text(item.content, updated_vars)
     if format == "html":
       output.add "<li>" & got & "</li>"
     if format == "markdown":
@@ -105,9 +105,9 @@ proc list*(input:node,vars:seq[seq[string]]):(string,seq[seq[string]])=
     
 proc and_function*(input:node,vars:seq[seq[string]]):(string,seq[seq[string]])=
   var updated_vars = vars
-  for item in input.subvalues:
+  for item in input.fnvars:
     var got = ""
-    (got, updated_vars) = compile_text(@[item], updated_vars)
+    (got, updated_vars) = compile_text(item.content, updated_vars)
     if got != "true":
       return ("false", updated_vars)
   return ("true", updated_vars)

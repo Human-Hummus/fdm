@@ -2,7 +2,7 @@
 $title=`FDM - Functional Document Maker`;
 body{
 	h1{$title}
-	plaintext{`The functions in FDM are really more like macros, tbh
+	p{`The functions in FDM are really more like macros, tbh
 	FDM, standing for Functional Document Maker (creative, I know), is a document maker that is more of a programming language than any other document fomat`}
 	h1{`Available functions`}
 	h2{`Built-in functions`}

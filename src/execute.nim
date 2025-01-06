@@ -1,8 +1,8 @@
 import parser, strutils, error
 include functions
 
-proc exec_function(input:seq[node], name:string, vars: seq[seq[string]], fncontents:seq[node]):(string, seq[seq[string]])
 
+proc exec_function(input:node, vars: seq[seq[string]]):string
 proc get_var*(name:string, vars:seq[seq[string]]):string=
   var x = 0
   while x < vars.len:
@@ -30,7 +30,7 @@ proc add_var*(name:string, contents:string, vars:seq[seq[string]]):seq[seq[strin
 
 type if_stat = enum yes, no, nill
 
-const max_iters = 10_000
+const max_iters = 1_000_000
 
 proc compile_text*(nodes:seq[node], vars: seq[seq[string]]):(string, seq[seq[string]])=
   var
@@ -61,10 +61,10 @@ proc compile_text*(nodes:seq[node], vars: seq[seq[string]]):(string, seq[seq[str
     elif nodes[x].kind == nodetype.function_call:
       var got = ""
       if nodes[x].name == "if":
-        if nodes[x].subvalues.len != 1:
+        if nodes[x].fnvars.len != 1:
           fatal "Illegal if statement " & pos
         
-        (got, updated_vars) = compile_text(@[nodes[x].subvalues[0]], updated_vars)
+        (got, updated_vars) = compile_text(nodes[x].fnvars[0].content, updated_vars)
         if got == "true":
           var got = compile_text(nodes[x].fncontents, updated_vars)
           output.add got[0]
@@ -73,7 +73,7 @@ proc compile_text*(nodes:seq[node], vars: seq[seq[string]]):(string, seq[seq[str
         else:
           prev_if_statement = if_stat.no
       elif nodes[x].name == "else":
-        if nodes[x].subvalues.len != 0:
+        if nodes[x].fnvars.len != 0:
           warn "Else statement has arguments. These will be ignored. " & pos
         if prev_if_statement == if_stat.nill:
           fatal "Else statement not preceeded by if statement. " & pos
@@ -83,12 +83,12 @@ proc compile_text*(nodes:seq[node], vars: seq[seq[string]]):(string, seq[seq[str
         prev_if_statement = if_stat.nill
 
       elif nodes[x].name == "elif":
-        if nodes[x].subvalues.len != 1:
+        if nodes[x].fnvars.len != 1:
           fatal "Elif statement doesn't have 1 argument. " & pos
         if prev_if_statement == if_stat.nill:
           fatal "Elif statement not preceeded by if statement. " & pos
         if prev_if_statement == if_stat.no:
-          (got, updated_vars) = compile_text(nodes[x].subvalues, updated_vars)
+          (got, updated_vars) = compile_text(nodes[x].fnvars[0].content, updated_vars)
           if got == "true":
             (got, updated_vars) = compile_text(nodes[x].fncontents, updated_vars)
             output.add got
@@ -109,36 +109,39 @@ proc compile_text*(nodes:seq[node], vars: seq[seq[string]]):(string, seq[seq[str
       elif nodes[x].name == "list":
         (got, updated_vars) = list(nodes[x], updated_vars)
         output.add got
+      elif nodes[x].name == "fatal":
+        (got, updated_vars) = compile_text(nodes[x].fnvars[0].content, updated_vars)
+        fatal got
       elif nodes[x].name == "and":
         (got, updated_vars) = and_function(nodes[x], updated_vars)
         output.add got
       elif nodes[x].name == "is_defined":
-        if nodes[x].subvalues.len != 1:
-          fatal "illegal is_defined statement; got " & $nodes[x].subvalues.len & " arguments instead of 1 " & pos
-        (got, updated_vars) = compile_text(@[nodes[x].subvalues[0]], updated_vars)
-        if got != "null":output.add "false"
+        if nodes[x].fnvars.len != 1:
+          fatal "illegal is_defined statement; got " & $nodes[x].fnvars.len & " arguments instead of 1 " & pos
+        (got, updated_vars) = compile_text(nodes[x].fnvars[0].content, updated_vars)
+        if got == "null":output.add "false"
         else:output.add "true"
          
       elif nodes[x].name == "not":
-        if nodes[x].subvalues.len != 1:
-          fatal "illegal not statement; got " & $nodes[x].subvalues.len & " arguments instead of 1 " & pos
-        (got, updated_vars) = compile_text(nodes[x].subvalues, updated_vars)
+        if nodes[x].fnvars.len != 1:
+          fatal "illegal not statement; got " & $nodes[x].fnvars.len & " arguments instead of 1 " & pos
+        (got, updated_vars) = compile_text(nodes[x].fnvars[0].content, updated_vars)
         if got == "true":
           output.add "false"
         else:
           output.add "true"
       elif nodes[x].name == "len":
-        if nodes[x].subvalues.len != 1:
-          fatal "illegal not statement; got " & $nodes[x].subvalues.len & " arguments instead of 1 " & pos
-        (got, updated_vars) = compile_text(nodes[x].subvalues, updated_vars)
+        if nodes[x].fnvars.len != 1:
+          fatal "illegal not statement; got " & $nodes[x].fnvars.len & " arguments instead of 1 " & pos
+        (got, updated_vars) = compile_text(nodes[x].fnvars[0].content, updated_vars)
         output.add $got.len
 
       elif nodes[x].name == "while":
-        if nodes[x].subvalues.len != 1:
-          fatal "illegal while statement; got " & $nodes[x].subvalues.len & " arguments instead of 1" 
+        if nodes[x].fnvars.len != 1:
+          fatal "illegal while statement; got " & $nodes[x].fnvars.len & " arguments instead of 1" 
         var iterations = 0
         while iterations < max_iters:
-          (got, updated_vars) = compile_text(nodes[x].subvalues, updated_vars)
+          (got, updated_vars) = compile_text(nodes[x].fnvars[0].content, updated_vars)
           if got != "true":
             break
           (got, updated_vars) = compile_text(nodes[x].fncontents, updated_vars)
@@ -147,17 +150,16 @@ proc compile_text*(nodes:seq[node], vars: seq[seq[string]]):(string, seq[seq[str
         if iterations == max_iters:
           fatal "While loop exceeded maximum iteration number: " & $max_iters & " " & pos
       elif nodes[x].name == "print":
-        if nodes[x].subvalues.len != 1:
-          fatal "illegal while statement; got " & $nodes[x].subvalues.len & " arguments instead of 1 "  & pos      
-        (got, updated_vars) = compile_text(nodes[x].subvalues, updated_vars)
+        if nodes[x].fnvars.len != 1:
+          fatal "illegal while statement; got " & $nodes[x].fnvars.len & " arguments instead of 1 "  & pos      
+        (got, updated_vars) = compile_text(nodes[x].fnvars[0].content, updated_vars)
         echo got
       elif nodes[x].name == "or":
         (got, updated_vars) = or_function(nodes[x], updated_vars)
         output.add got
       else:
-        var got = exec_function(nodes[x].subvalues, nodes[x].name, updated_vars, nodes[x].fncontents)
-        output.add got[0]
-        updated_vars = got[1]
+        var got = exec_function(nodes[x], updated_vars)
+        output.add got
     elif nodes[x].kind == nodetype.variable:
       output.add get_var(nodes[x].name, updated_vars)
     elif nodes[x].kind == nodetype.generic:
@@ -171,27 +173,38 @@ proc compile_text*(nodes:seq[node], vars: seq[seq[string]]):(string, seq[seq[str
     x+=1
   return (output,updated_vars)
 
-proc exec_function(input:seq[node], name:string, vars: seq[seq[string]], fncontents:seq[node]):(string, seq[seq[string]])=
+proc exec_function(input:node, vars: seq[seq[string]]):string=
   var
-    x = 0
-    real_vars = vars
-  while x < functions.len:
-    if functions[x].name == name:
-      var y = 0
-      var vs =functions[x].value.split(",")
-      while y < vs.len:
-        if y == input.len:
-          discard
-        else:
-          var got = compile_text(@[input[y]], real_vars)
-          real_vars = got[1]
-          real_vars = add_var(vs[y], got[0], real_vars)
-        y+=1
-      var got = compile_text(fncontents, real_vars)
-      real_vars = got[1]
-      real_vars = add_var("input", got[0], real_vars)
-      var stuff = ""
-      (stuff, real_vars) = compile_text(functions[x].subvalues, real_vars)
-      return (stuff, real_vars)
-    x+=1
-  return ("null", real_vars)
+    updated_vars = vars
+    contents:seq[node] = @[]
+    cur_unnamed_var = 0
+  for current_function in functions:
+    if current_function.name != input.name:
+      continue
+    for arg in current_function.fnvars:
+      if arg.content.len > 0:
+        var got = ""
+        (got, updated_vars) = compile_text(arg.content, updated_vars)
+        updated_vars = add_var(arg.name, got, updated_vars)
+        
+    for arg in input.fnvars:
+      if arg.name == "":
+        if cur_unnamed_var >= current_function.fnvars.len:
+          fatal "too many anonymous arguments " & input.pos
+        var vname = current_function.fnvars[cur_unnamed_var].name
+        var got = ""
+        (got, updated_vars) = compile_text(arg.content, updated_vars)
+        updated_vars = add_var(vname, got, updated_vars)
+        cur_unnamed_var+=1
+      else:
+        var vname = arg.name
+        var got = ""
+        (got, updated_vars) = compile_text(arg.content, updated_vars)
+        updated_vars = add_var(vname, got, updated_vars)
+    var got = ""
+    (got, updated_vars) = compile_text(input.fncontents, updated_vars)
+    updated_vars = add_var("input", got, updated_vars)
+
+    (got, _) = compile_text(current_function.fncontents, updated_vars)
+    return got
+  return "null"

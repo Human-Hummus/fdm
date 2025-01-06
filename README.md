@@ -9,19 +9,19 @@ The functions in FDM are really more like macros, tbh FDM, standing for Function
 
 ## Built-in functions
 
-nullsnullinullgnullnnullanulltnullunullrnulle|nullenullxnullpnulllnullanullinullnnullanulltnullinullonulln|
+signature|explaination|
 |-|-|
-nulltnullanullbnulllnullenull(null<nullrnullonullwnullsnull>null)|nullSnulltnullrnullunullcnulltnullunullrnullenull nullfnullonullrnull nullanull nulltnullanullbnulllnullenull nullmnullanullknullenull nullanull nulltnullanullbnulllnullenull nulllnullinullknullenull nullfnullonulllnulllnullonullwnullsnull nulltnullanullbnulllnullenull(nullrnullonullwnull(nullanull,nullbnull,nullcnull)null,nullrnullonullwnull(nulldnull,nullenull,nullfnull)null)null.|
-nullrnullonullwnull(null<nullinulltnullenullmnullsnull>null)|nullunullsnullenulldnull nullinullnnull nulltnullanullbnulllnullenull(null)null nullanullsnull nulldnullenullsnullcnullrnullinullbnullenulldnull nullanullbnullonullvnulle|
-nulllnullinullsnulltnull(null<nullinulltnullenullmnullsnull>null)|nullrnullenulltnullunullrnullnnullsnull nulltnullhnullenull nullanullrnullgnullunullmnullenullnnulltnullsnull nullonullrnullgnullanullnnullinullznullenulldnull nullanullsnull nullanull nulllnullinullsnullt|
-nullinullfnull(null<nulltnullrnullunullenull nullonullrnull nullfnullanulllnullsnullenull>null)null{null<nullcnullonullnnulltnullenullnnulltnull>null}|nullcnullhnullenullcnullknullsnull nullinullfnull nulltnullhnullenull nullanullrnullgnullunullmnullenullnnulltnull nullpnullrnullonullvnullinulldnullenulldnull nullinullsnull nulltnullrnullunullenull,null nullanullnnulldnull nullinullfnull nullinulltnull nullinullsnull,null nullinulltnull'nulllnulllnull nullrnullenulltnullunullrnullnnull null<nullcnullonullnnulltnullenullnnulltnull>|
-nullenulllnullsnullenull{null<nullcnullonullnnulltnullenullnnulltnull>null}|nullRnullenulltnullunullrnullnnullsnull null<nullcnullonullnnulltnullenullnnulltnull>null nullinullfnull nulltnullhnullenull nullanullbnullonullvnullenull nullinullfnull nullsnulltnullanulltnullenullmnullenullnnulltnull nullanullnnulldnull nullenulllnullinullfnull nullsnulltnullanulltnullenullmnullenullnnulltnullsnull nullanullrnullenull nullfnullanulllnullsnullenull.|
-nullsnullunullmnull(null<nullinulltnullenullmnullsnull>null)|nullAnulldnulldnullsnull nullnnullunullmnullbnullenullrnullsnull nullwnullinulltnullhnullinullnnull nullanullnnulldnull nullrnullenulltnullunullrnullnnullsnull nulltnullhnullenull nullvnullanulllnullunullenull.null nullrnullenulltnullunullrnullnnullsnull nullEnullRnullRnullOnullRnull nullinullfnull nulltnullhnullenull nullinullnnullnnullenullrnull nullvnullanulllnullunullenullsnull nullanullrnullenullnnull'nulltnull nullnnullunullmnullbnullenullrnullsnull.null nullMnullunullsnulltnull nullbnullenull nullinullnnulltnullenullgnullenullrnullsnull.|
+table(<rows>)|Structure for a table make a table like follows table(row(a,b,c),row(d,e,f)).|
+row(<items>)|used in table() as described above|
+list(<items>)|returns the arguments organized as a list|
+if(<true or false>){<content>}|checks if the argument provided is true, and if it is, it'll return <content>|
+else{<content>}|Returns <content> if the above if statement and elif statements are false.|
+sum(<items>)|Adds numbers within and returns the value. returns ERROR if the inner values aren't numbers. Must be integers.|
 
 
 ## standard library functions
 
-nulllnullinullnnullknull(null<nullUnullRnullLnull>null)null{null<nullcnullonullnnulltnullenullnnulltnull>null}|nullMnullanullknullenullsnull nullanull nulllnullinullnnullknull nulltnullonull null<nullUnullRnullLnull>null nullwnullinulltnullhnull null<nullcnullonullnnulltnullenullnnulltnull>null nullanullsnull nulltnullhnullenull nulltnullenullxnullt|
+link(<URL>){<content>}|Makes a link to <URL> with <content> as the text|
 |-|-|
 
 

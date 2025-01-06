@@ -1,4 +1,5 @@
 import strutils, sequtils, error, strformat
+include standard #include the FDM standard lib 
 
 type
   tokentype* = enum
@@ -24,7 +25,12 @@ proc tokenizer*(input, filename:string):seq[token] =
         x+=1
       if not (x < input.len):
         fatal fmt"'@{buffer}' not followed by semicolon"
-      output = concat(output, tokenizer(readFile(buffer), buffer));
+      var filecontents = ""
+      if buffer == "std":
+        filecontents = stdlib
+      else:
+        filecontents = readFile(buffer)
+      output = concat(output, tokenizer(filecontents, buffer));
     elif input[x] in IdentChars:
       var buffer = ""
       while x < input.len and input[x] in IdentChars:
@@ -69,6 +75,29 @@ proc tokenizer*(input, filename:string):seq[token] =
       if x == input.len:
         fatal "Unterminated string"
       output.add token(kind:tokentype.text,value:buffer, pos:filename & ":" & $line_number)
+    elif input[x] == '"':
+      x+=1 
+      var buffer = ""
+      while x < input.len and input[x] != '"':
+        if input[x] == '\\':
+          x+=1
+          if x == input.len:
+            fatal "Unterminated string"
+          if input[x] == 'n':
+            buffer.add '\n'
+          elif input[x] == 't':
+            buffer.add '\t'
+          else:
+            if input[x] == '\n':
+              line_number+=1
+            buffer.add input[x]
+        else:
+          buffer.add input[x]
+        x+=1
+      if x == input.len:
+        fatal "Unterminated string"
+      output.add token(kind:tokentype.text,value:buffer, pos:filename & ":" & $line_number)
+
     elif input[x] == '\n':
       line_number+=1
     x+=1;
