@@ -22,6 +22,7 @@ proc tokenizer*(input, filename:string):seq[token] =
     x = 0
     output:seq[token] = @[]
     line_number = 1
+    line_pos = 1
   while x < input.len():
     if input[x] == '@':
       x += 1
@@ -38,7 +39,7 @@ proc tokenizer*(input, filename:string):seq[token] =
         filecontents = stdlib
       else:
         filecontents = readFile(get_path(filename) & buffer)
-      output = concat(output, tokenizer(filecontents, buffer));
+      output = concat(output, tokenizer(filecontents, get_path(filename) & buffer));
     elif input[x] in IdentChars:
       var buffer = ""
       while x < input.len and input[x] in IdentChars:
@@ -75,11 +76,14 @@ proc tokenizer*(input, filename:string):seq[token] =
           elif input[x] == 't':
             buffer.add '\t'
           else:
-            if input[x] == '\n':
-              line_number+=1
             buffer.add input[x]
         else:
           buffer.add input[x]
+        if input[x] == '\n':
+          line_number+=1
+          line_pos =  0
+
+        line_pos+=1
         x+=1
       if x == input.len:
         fatal "Unterminated string " & starts_at
@@ -98,11 +102,13 @@ proc tokenizer*(input, filename:string):seq[token] =
           elif input[x] == 't':
             buffer.add '\t'
           else:
-            if input[x] == '\n':
-              line_number+=1
             buffer.add input[x]
         else:
           buffer.add input[x]
+        if input[x] == '\n':
+          line_number+=1
+          line_pos =  0
+        line_pos += 1
         x+=1
       if x == input.len:
         fatal "Unterminated string " & starts_at
@@ -110,5 +116,6 @@ proc tokenizer*(input, filename:string):seq[token] =
 
     elif input[x] == '\n':
       line_number+=1
+    line_pos+=1
     x+=1;
   return output

@@ -118,11 +118,40 @@ func plaintext(){
 		$plaintext_iter=sum($plaintext_iter, 1);
 	}
 }
+
+
+func quote(){
+	if (eql($format, html)){
+		`<blockquote>`$input`</blockquote>`
+	}
+	if (eql($format, markdown)){
+		`>`
+		$par_iter = 0;
+		while (not(eql($par_iter, len($input)))){
+			if (eql($input[$par_iter], `\n`)){
+				`\n>`
+			}
+			else{
+				$input[$par_iter]
+			}
+			$par_iter=sum($par_iter, 1);
+		}
+	}
+}
+func q(){
+	if (eql($format, html)){
+		`<q>`$input`</q>`
+	}
+	if (eql($format, markdown)){
+		`"`$input`"`
+	}
+}
+
 func p(){
 	$paragraph_iter=0;
 	$output=``;
 	if (eql(format,html)){
-		$output=$output`<p>`;
+		$output=$output`<p style="text-indent:50px;">`;
 	}
 	while (not(eql($paragraph_iter, len($input)))){
 		if (or(eql($input[$paragraph_iter], `\n`), eql($input[$paragraph_iter], ` `), eql($input[$paragraph_iter], `\t`))){
