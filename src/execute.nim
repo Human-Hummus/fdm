@@ -151,7 +151,7 @@ proc compile_text*(nodes:seq[node], vars: seq[seq[string]]):(string, seq[seq[str
           fatal "While loop exceeded maximum iteration number: " & $max_iters & " " & pos
       elif nodes[x].name == "print":
         if nodes[x].fnvars.len != 1:
-          fatal "illegal while statement; got " & $nodes[x].fnvars.len & " arguments instead of 1 "  & pos      
+          fatal "illegal while statement; got " & $nodes[x].fnvars.len & " arguments instead of 1 "  & pos
         (got, updated_vars) = compile_text(nodes[x].fnvars[0].content, updated_vars)
         echo got
       elif nodes[x].name == "or":

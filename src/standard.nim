@@ -174,4 +174,32 @@ func p(){
 	}
 	$output
 }
+
+func sup(){
+	if (or(eql($format, html), eql($format, markdown))){
+		`<sup>`$input`</sup>`
+	}
+}
+func sub(){
+	if (or(eql($format, html), eql($format, markdown))){
+		`<sup>`$input`</sup>`
+	}
+}
+
+
+func frac(a,b){
+	if (or(eql($format, html), eql($format, markdown))){
+		sup{$a}`/`sub{$b}
+		
+	}
+}
+
+
+$mult=`×`;
+$plusmin=`±`;
+$sqrt=`√`;
+$noteq=`≠`;
+$approxeq="≈";
+$theta=`θ`;
+
 """

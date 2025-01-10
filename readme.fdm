@@ -3,7 +3,8 @@ $title=`FDM - Functional Document Maker`;
 body{
 	h1{$title}
 	p{`The functions in FDM are really more like macros, tbh
-	FDM, standing for Functional Document Maker (creative, I know), is a document maker that is more of a programming language than any other document fomat`}
+	FDM, standing for Functional Document Maker (creative, I know), is a document maker that is more of a programming language than any other document fomat.
+	You can create and call functions. There is a standard library of functions, defined in \`src/standard.nim\`.`}
 	h1{`Available functions`}
 	h2{`Built-in functions`}
 	table(
@@ -14,10 +15,24 @@ body{
 		row(plaintext{`if(<true or false>){<content>}`},plaintext{`checks if the argument provided is true, and if it is, it'll return <content>`}),
 		row(plaintext{`else{<content>}`},plaintext{`Returns <content> if the above if statement and elif statements are false.`}),
 		row(plaintext{`sum(<items>)`}, plaintext{`Adds numbers within and returns the value. returns ERROR if the inner values aren't numbers. Must be integers.`}),
+		row(plaintext{`sub{<content>}`}, plaintext{`Returns the subscripted <content>`}),
+		row(plaintext{`sup{<content>}`}, plaintext{`Returns the superscripted <content>`}),
+		row(plaintext{`frac(<numerator>, <denominator>)`}, plaintext{`Returns a formatted fraction of the two values.`}),
 	)
 	h2{`standard library functions`}
 	table(
+		row(signature, explaination),
 		row(plaintext{`link(<URL>){<content>}`}, plaintext{`Makes a link to <URL> with <content> as the text`})
 	)
-	list(a,b,c)
+	h2{`Standard Library Variables`}
+	h3{"Math Symbols"}
+	table(
+		row("mult", $mult),
+		row("plusmin", $plusmin),
+		row("sqrt", $sqrt),
+		row("noteq", $noteq),
+		row("approxeq", $approxeq),
+		row("theta", $theta),
+		
+	)
 }

@@ -1,6 +1,6 @@
 import tokenize, parser, std/os, execute, error
 when isMainModule:
-  var 
+  var
     filein = ""
     format = "html"
     fileout = ""
@@ -13,7 +13,7 @@ when isMainModule:
         if not (x < args.len):
           fatal "Input not followed by argument"
         filein = args[x]
-        
+
       of "-o", "--output":
         x+=1
         if not (x < args.len):
@@ -36,6 +36,6 @@ when isMainModule:
   if fileout.len < 1:
     fileout = "/dev/stdout"
   var tokens = tokenizer("@" & filein & ";", "head")
-  var parsed =  parser(tokens)
+  var parsed = parser(tokens)
   var (executed, _) = compile_text(parsed, @[@["format", format]])
   writeFile(fileout, executed) #missing propper error

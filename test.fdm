@@ -1,4 +1,3 @@
-@readme.fdm;
-func test(def){
-	print($def)
-}
+@std;
+
+frac(a,b)
