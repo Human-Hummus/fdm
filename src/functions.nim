@@ -1,10 +1,10 @@
 #THIS IS INCLUDED IN EXECUTE.NIM
 
-proc compile_text*(nodes:seq[node], vars: seq[seq[string]]):(string, seq[seq[string]])
-proc get_var*(name:string, vars:seq[seq[string]]):string
+proc compile_text*(nodes: seq[node], vars: seq[variable]): (string, seq[variable])
+proc get_var*(name: string, vars: seq[variable]): string
 
-proc or_function*(input:node, vars:seq[seq[string]]):(string, seq[seq[string]])=
-  var 
+proc or_function*(input: node, vars: seq[variable]): (string, seq[variable]) =
+  var
     updated_vars = vars
   if input.fncontents.len != 0:
     warn "or function has function contents. These will be ignored. " & input.pos
@@ -15,21 +15,22 @@ proc or_function*(input:node, vars:seq[seq[string]]):(string, seq[seq[string]])=
       return ("true", updated_vars)
   return ("false", updated_vars)
 
-proc equals*(input:node, vars:seq[seq[string]]):(string, seq[seq[string]])=
+proc equals*(input: node, vars: seq[variable]): (string, seq[variable]) =
   var
     updated_vars = vars
   if input.fnvars.len != 2:
-    fatal "illegal eql statement; got " & $input.subvalues.len & " arguments instead of 2 " & input.pos
-  var 
+    fatal "illegal eql statement; got " & $input.subvalues.len &
+        " arguments instead of 2 " & input.pos
+  var
     a = ""
     b = ""
-  (a, updated_vars) = compile_text(input.fnvars[0].content, updated_vars) 
-  (b, updated_vars) = compile_text(input.fnvars[1].content, updated_vars) 
+  (a, updated_vars) = compile_text(input.fnvars[0].content, updated_vars)
+  (b, updated_vars) = compile_text(input.fnvars[1].content, updated_vars)
   if a == b:
     return ("true", updated_vars)
   return ("false", updated_vars)
-proc sum_function*(input:node, vars:seq[seq[string]]):(string, seq[seq[string]])=
-  var 
+proc sum_function*(input: node, vars: seq[variable]): (string, seq[variable]) =
+  var
     updated_vars = vars
     total = 0
   for item in input.fnvars:
@@ -40,7 +41,7 @@ proc sum_function*(input:node, vars:seq[seq[string]]):(string, seq[seq[string]])
     except:
       return ("ERROR", updated_vars)
   return ($total, updated_vars)
-proc table*(input:node,vars:seq[seq[string]]):(string,seq[seq[string]])=
+proc table*(input: node, vars: seq[variable]): (string, seq[variable]) =
   var
     format = get_var("format", vars)
     updated_vars = vars
@@ -81,7 +82,7 @@ proc table*(input:node,vars:seq[seq[string]]):(string,seq[seq[string]])=
   if format == "markdown":
     output.add "\n"
   return (output, updated_vars)
-proc list*(input:node,vars:seq[seq[string]]):(string,seq[seq[string]])=
+proc list*(input: node, vars: seq[variable]): (string, seq[variable]) =
   var
     format = get_var("format", vars)
     output = ""
@@ -96,14 +97,14 @@ proc list*(input:node,vars:seq[seq[string]]):(string,seq[seq[string]])=
     if format == "html":
       output.add "<li>" & got & "</li>"
     if format == "markdown":
-      output.add "- " & got.replace("\n","\n\t") & "\n"
+      output.add "- " & got.replace("\n", "\n\t") & "\n"
   if format == "html":
     output.add "</ul>"
   if format == "markdown":
     output.add "\n"
   return (output, updated_vars)
-    
-proc and_function*(input:node,vars:seq[seq[string]]):(string,seq[seq[string]])=
+
+proc and_function*(input: node, vars: seq[variable]): (string, seq[variable]) =
   var updated_vars = vars
   for item in input.fnvars:
     var got = ""

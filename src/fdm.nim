@@ -37,5 +37,6 @@ when isMainModule:
     fileout = "/dev/stdout"
   var tokens = tokenizer("@" & filein & ";", "head")
   var parsed = parser(tokens)
-  var (executed, _) = compile_text(parsed, @[@["format", format]])
+  var (executed, _) = compile_text(parsed, @[execute.variable(name: "format",
+      content: format)])
   writeFile(fileout, executed) #missing propper error
