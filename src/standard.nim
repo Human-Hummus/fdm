@@ -15,6 +15,9 @@ func b(){
 	if (eql($format, markdown)){
 		`**`$input`**`
 	}
+    if (eql($format, latex)){
+      `\\textbf{`$input`}`
+    }
 }
 func i(){
 	if (eql($format, html)){
@@ -23,6 +26,9 @@ func i(){
 	if (eql($format, markdown)){
 		`*`$input`*`
 	}
+    if (eql($format, latex)){
+      `\\textit{`$input`}`
+    }
 }
 
 func div(){
@@ -30,6 +36,9 @@ func div(){
 		`<div`style_and_class()`>`$input`</div>`
 	}
 	if (eql($format, markdown)){
+		$input
+	}
+	if (eql($format, latex)){
 		$input
 	}
 }
@@ -41,6 +50,9 @@ func h1(){
 	if (eql($format, markdown)){
 		`\n# `$input`\n`
 	}
+    if (eql($format, latex)){
+      `\\section{`$input`}`
+    }
 }
 func h2(){
 	if (eql($format, html)){
@@ -49,6 +61,9 @@ func h2(){
 	if (eql($format, markdown)){
 		`\n## `$input`\n`
 	}
+    if (eql($format, latex)){
+      `\\subsection{`$input`}`
+    }
 }
 
 func h3(){
@@ -58,6 +73,9 @@ func h3(){
 	if (eql($format, markdown)){
 		`\n### `$input`\n`
 	}
+    if (eql($format, latex)){
+      `\\subsubsection{`$input`}`
+    }
 }
 
 func newline(){
@@ -65,6 +83,9 @@ func newline(){
 		`<br>`
 	}
 	if (eql($format, markdown)){
+		`\n`
+	}
+	if (eql($format, latex)){
 		`\n`
 	}
 }
@@ -85,6 +106,22 @@ func body(){
 	if (eql($format, markdown)){
 		$input
 	}
+    if (eql($format, latex)){
+      `\\documentclass[english]{article}`
+      `\\usepackage{hyperref}`
+      `\\usepackage{amsmath}`
+      `\\usepackage{unicode-math}`
+      `\\usepackage[utf8]{inputenc}`
+      if (is_defined($title)){
+        `\\title{`$title`}`
+      }
+      `\\begin{document}`
+      if (is_defined($title)){
+        `\\maketitle`
+      }
+      $input
+      `\\end{document}`
+    }
 	
 }
 
@@ -93,13 +130,19 @@ func link(link){
 		`<a href="`$link`"`style_and_class()`>`$input`</a>`
 	}
 	if (eql($format, markdown)){
-		
+	    `[`$input`](`$link`)`	
 	}
+    if (eql($format, latex)){
+        `\\href{`link`}{`$input`}`
+    }
 }
 func center(){
 	if (eql($format, html)){
 		div(style=`text-align:center;margin 0 auto;`){$input}
 	}
+    else{
+      $input
+    }
 }
 
 func plaintext(){
@@ -109,8 +152,8 @@ func plaintext(){
 			newline()
 		}
 
-		elif (and(eql(format, "markdown"), eql($input[$plaintext_iter], `\\`))){
-			`\\\\`
+		elif (and(eql(format, markdown), eql($input[$plaintext_iter], `\\`))){
+			`\\`
 		}
 		else{
 			$input[$plaintext_iter]
@@ -137,6 +180,12 @@ func quote(){
 			$par_iter=sum($par_iter, 1);
 		}
 	}
+    if (eql($format, latex)){
+      `\\begin{quote}`
+      $input
+      `\\end{quote}`
+
+    }
 }
 func q(){
 	if (eql($format, html)){
@@ -145,13 +194,20 @@ func q(){
 	if (eql($format, markdown)){
 		`"`$input`"`
 	}
+	if (eql($format, latex)){
+		`"`$input`"`
+	}
+
 }
 
 func p(){
 	$paragraph_iter=0;
 	$output=``;
-	if (eql(format,html)){
+	if (eql($format,html)){
 		$output=$output`<p style="text-indent:50px;">`;
+	}	
+    if (eql($format,latex)){
+		$output=$output`\\begin{paragraph}`;
 	}
 	while (not(eql($paragraph_iter, len($input)))){
 		if (or(eql($input[$paragraph_iter], `\n`), eql($input[$paragraph_iter], ` `), eql($input[$paragraph_iter], `\t`))){
@@ -169,8 +225,11 @@ func p(){
 	if (eql($format, markdown)){
 		$output = `\n\n`$output`\n\n`;
 	}
-	if (eql(format,html)){
+	if (eql($format,html)){
 		$output=$output`</p>`;
+	}
+	if (eql($format,latex)){
+		$output=$output`\\end{paragraph}`;
 	}
 	$output
 }
@@ -179,27 +238,45 @@ func sup(){
 	if (or(eql($format, html), eql($format, markdown))){
 		`<sup>`$input`</sup>`
 	}
+    if (eql($format, latex)){
+        `^{`$input`}`
+    }
 }
 func sub(){
 	if (or(eql($format, html), eql($format, markdown))){
 		`<sup>`$input`</sup>`
 	}
+    if (eql($format, latex)){
+        `_{`$input`}`
+    }
 }
 
 
 func frac(a,b){
 	if (or(eql($format, html), eql($format, markdown))){
-		sup{$a}`/`sub{$b}
+		`(`sup{$a}`/`sub{$b}`)`
 		
 	}
+    if (eql($format, latex)){
+        `$\\frac{`$a`}{`$b`}$`
+    }
 }
 
 
-$mult=`×`;
-$plusmin=`±`;
-$sqrt=`√`;
-$noteq=`≠`;
+$mult="×";
+$plusmin="±";
+$sqrt="√";
+$noteq="≠";
 $approxeq="≈";
-$theta=`θ`;
+$theta="θ";
+
+if (eql($format, latex)){
+  $mult="\\(\\times\\)";
+  $plusmn="U+00B1";
+  $sqrt="$\\sqrt[]{}$";
+  $noteq="$\\ne$";
+  $approxeq="$\\approx$";
+  $theta="$\\muptheta$";
+}
 
 """

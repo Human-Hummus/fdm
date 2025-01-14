@@ -35,4 +35,5 @@ body{
 		row("theta", $theta),
 		
 	)
+	frac(1,2)
 }

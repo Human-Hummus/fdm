@@ -31,6 +31,8 @@ when isMainModule:
     format = "html"
   elif format in @["MD", "md", "Markdown", "markdown"]:
     format = "markdown"
+  elif format in @["tex", "latex", "ltx"]:
+    format = "latex"
   else:
     fatal "Unknown format"
   if fileout.len < 1:
