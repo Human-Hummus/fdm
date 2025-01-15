@@ -2,6 +2,8 @@ import strutils, sequtils, error, strformat
 import std/httpclient
 include standard #include the FDM standard lib
 
+var files_completed: seq[string] = @[]
+
 type
   tokentype* = enum
     text, id, function_call, equals, variable, paren, comma, curly, bracket, semi
@@ -36,7 +38,6 @@ proc tokenizer*(input, filename: string): seq[token] =
       if not (x < input.len):
         fatal fmt"'@{buffer}' not followed by semicolon"
       var filecontents = ""
-      echo ";"&buffer&";"
       if "std" in buffer:
         filecontents = stdlib
       elif "https://" in buffer:
@@ -44,10 +45,12 @@ proc tokenizer*(input, filename: string): seq[token] =
         var client = newHttpClient()
         try:
           got = client.getContent(buffer)
+        except:
+          got = "ERROR"
         finally:
           client.close()
         if got == "ERROR":
-          warn "Failed to retrieve \"" & buffer & "\""
+          warn fmt"Failed to retrieve {buffer}"
         filecontents = got
 
       else:
@@ -59,7 +62,13 @@ proc tokenizer*(input, filename: string): seq[token] =
       while x < input.len and input[x] in IdentChars:
         buffer.add input[x]
         x+=1
-      output.add token(kind: tokentype.id, value: buffer, pos: filename & ":" & $line_number)
+      if buffer == "single_import":
+        if filename in files_completed:
+          var tmp: seq[token] = @[]
+          return tmp
+      else:
+        output.add token(kind: tokentype.id, value: buffer, pos: filename &
+            ":" & $line_number)
       x-=1
     elif input[x] in "()":
       output.add token(kind: tokentype.paren, value: $input[x], pos: filename &
@@ -138,4 +147,5 @@ proc tokenizer*(input, filename: string): seq[token] =
       line_number+=1
     line_pos+=1
     x+=1;
+  files_completed.add filename
   return output

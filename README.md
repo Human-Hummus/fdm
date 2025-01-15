@@ -7,6 +7,10 @@ The functions in FDM are really more like macros, tbh FDM, standing for Function
 
 # Available functions
 
+
+Note that you must import std in order to access all of the following functions.
+
+
 ## Built-in functions
 
 signature|explaination|
@@ -19,7 +23,8 @@ else{<content>}|Returns <content> if the above if statement and elif statements 
 sum(<items>)|Adds numbers within and returns the value. returns ERROR if the inner values aren't numbers. Must be integers.|
 sub{<content>}|Returns the subscripted <content>|
 sup{<content>}|Returns the superscripted <content>|
-frac(<numerator>, <denominator>)|Returns a formatted fraction of the two values.|
+text{<content>}|Returns <content> formatted in a way such that all characters will be displayed as-is in the output|
+frac(<numerator>, <denominator>)|Returns a formatted fraction of the two values. Especially useful when compiling to latex|
 
 
 ## standard library functions
@@ -40,4 +45,10 @@ sqrt|√|
 noteq|≠|
 approxeq|≈|
 theta|θ|
+
+
+# Compiling/installing
+
+
+To compile, run nimble build -d:release -d:ssl, and copy the newly created "fdm" file to your $PATH.
 

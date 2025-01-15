@@ -1,4 +1,5 @@
 const stdlib = """
+single_import
 func style_and_class(){
 	if (is_defined($class)){
 		` class="`$class`" `
@@ -145,20 +146,20 @@ func center(){
     }
 }
 
-func plaintext(){
-	$plaintext_iter=0;
-	while (not(eql($plaintext_iter, len($input)))){
-		if (eql($input[$plaintext_iter], `\n`)){
+func text(){
+	$text_iter=0;
+	while (not(eql($text_iter, len($input)))){
+		if (eql($input[$text_iter], `\n`)){
 			newline()
 		}
 
-		elif (and(eql(format, markdown), eql($input[$plaintext_iter], `\\`))){
+		elif (and(eql(format, markdown), eql($input[$text_iter], `\\`))){
 			`\\`
 		}
 		else{
-			$input[$plaintext_iter]
+			$input[$text_iter]
 		}
-		$plaintext_iter=sum($plaintext_iter, 1);
+		$text_iter=sum($text_iter, 1);
 	}
 }
 
