@@ -100,6 +100,7 @@ func body(){
 				if (is_defined($favicon)){`<link rel="icon" type="image/x-icon" href="`$favicon`">`}
 			`</head>`
 			`<body>`
+            `<style>ul{margin-left:5%;}</style>`
 				$input
 			`</body>`
 		`</html>`
@@ -139,7 +140,7 @@ func link(link){
 }
 func center(){
 	if (eql($format, html)){
-		div(style=`text-align:center;margin 0 auto;`){$input}
+		div(style=`text-align:center;`){$input}
 	}
     else{
       $input
@@ -153,8 +154,23 @@ func text(){
 			newline()
 		}
 
-		elif (and(eql(format, markdown), eql($input[$text_iter], `\\`))){
+		elif (and(eql($format, markdown), eql($input[$text_iter], `\\`))){
 			`\\`
+		}
+		elif (and(eql($format, html), eql($input[$text_iter], `<`))){
+			`&lt;`
+		}
+		elif (and(eql($format, html), eql($input[$text_iter], `>`))){
+			`&gt;`
+		}
+        elif (and(eql($format, html), eql($input[$text_iter], `&`))){
+			`&amp;`
+		}
+		elif (and(eql($format, markdown), eql($input[$text_iter], `<`))){
+			`\\<`
+		}
+		elif (and(eql($format, markdown), eql($input[$text_iter], `>`))){
+			`\\>`
 		}
 		else{
 			$input[$text_iter]

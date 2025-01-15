@@ -116,7 +116,7 @@ proc list*(input: node, vars: seq[variable]): (string, seq[variable]) =
     updated_vars = vars
     got = ""
   if format == "html":
-    output.add "<ul>"
+    output.add "<ul style=\"margin-left:5%;\">"
   if format == "markdown":
     output.add "\n"
   if format == "latex":
