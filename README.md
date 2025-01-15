@@ -41,4 +41,3 @@ noteq|≠|
 approxeq|≈|
 theta|θ|
 
-(<sup>1</sup>/<sup>2</sup>)
