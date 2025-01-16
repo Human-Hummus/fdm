@@ -10,9 +10,11 @@ type
     fnvars*: seq[variable_dec]
     fncontents*: seq[node]
     pos*: string
+    is_approx* = false
   variable_dec* = object
     name*: string
     content*: seq[node]
+    is_approx* = false
 
 
 var functions*: seq[node] = @[]
@@ -59,7 +61,11 @@ proc parser*(input: seq[token]): seq[node] =
       x+=1
       if not (x < input.len):
         fatal "$ followed by EOF; should be followed by identifier " & pos
-      if x+1 < input.len and input[x+1].kind == tokentype.equals:
+      if x+1 < input.len and (input[x+1].kind == tokentype.equals or input[
+          x+1].kind == tokentype.tilda):
+        var is_approx = false
+        if input[x+1].kind == tilda:
+          is_approx = true
         var name = input[x].value
         x+=2
         if not (x < input.len):
@@ -79,7 +85,8 @@ proc parser*(input: seq[token]): seq[node] =
         if depth != 0 or x == input.len:
           fatal "unterminated variable decleration starting at " & pos
         output.add node(kind: nodetype.variable_decleration, name: name,
-            subvalues: parser(buffer), pos: pos)
+                        subvalues: parser(buffer), pos: pos,
+                            is_approx: is_approx)
         x-=1
       else:
         output.add node(kind: nodetype.variable, name: input[x].value, pos: pos)
@@ -101,6 +108,7 @@ proc parser*(input: seq[token]): seq[node] =
           var_buffer: seq[token] = @[]
           args: seq[variable_dec] = @[]
           fncontent: seq[token] = @[]
+          is_approx = false
         while x < input.len and not (depth == 0 and input[x].kind == paren and
             input[x].value == ")"):
           if depth == 0 and input[x].kind == tokentype.comma:
@@ -109,12 +117,14 @@ proc parser*(input: seq[token]): seq[node] =
                 fatal "illegal function variable " & pos
               var_name = var_buffer[0].value
               var_buffer = @[]
-            args.add variable_dec(name: var_name, content: parser(var_buffer))
+            args.add variable_dec(name: var_name, content: parser(var_buffer),
+                is_approx: is_approx)
             var_buffer = @[]
             var_name = ""
             x+=1
+            is_approx = false
             continue
-          if input[x].kind == equals:
+          if depth == 0 and input[x].kind == equals:
             if var_name != "":
               fatal "illegal variable; double assignment " & pos
             if var_buffer.len != 1:
@@ -128,13 +138,18 @@ proc parser*(input: seq[token]): seq[node] =
               depth+=1
             else:
               depth-=1
+          if depth == 0 and input[x].kind == tilda:
+            is_approx = true
+            x+=1
+            continue
           var_buffer.add input[x]
           x+=1
         if var_name == "" and var_buffer.len > 0:
           var_name = var_buffer[0].value
           var_buffer = @[]
         if var_name != "":
-          args.add variable_dec(name: var_name, content: parser(var_buffer))
+          args.add variable_dec(name: var_name, content: parser(var_buffer),
+              is_approx: is_approx)
         depth = 1
         if x >= input.len or input[x].kind != paren:
           fatal "Illegal function decleration, " & pos

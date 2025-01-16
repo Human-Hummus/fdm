@@ -6,7 +6,8 @@ var files_completed: seq[string] = @[]
 
 type
   tokentype* = enum
-    text, id, function_call, equals, variable, paren, comma, curly, bracket, semi
+    text, id, function_call, equals, variable, paren, comma, curly, bracket,
+      semi, tilda
   token* = object
     kind*: tokentype
     value*: string
@@ -142,7 +143,9 @@ proc tokenizer*(input, filename: string): seq[token] =
         fatal "Unterminated string " & starts_at
       output.add token(kind: tokentype.text, value: buffer, pos: filename &
           ":" & $line_number)
-
+    elif input[x] == '~':
+      output.add token(kind: tokentype.tilda, value: "~", pos: filename &
+          ":" & $line_number)
     elif input[x] == '\n':
       line_number+=1
     line_pos+=1

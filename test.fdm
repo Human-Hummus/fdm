@@ -1,2 +1,7 @@
 @std;
 @std;
+@std;
+body{
+frac(frac($theta, 1),
+$noteq)
+}

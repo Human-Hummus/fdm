@@ -4,6 +4,7 @@ type
   variable* = object
     name*: string
     content*: string
+    approx_content*: seq[node]
 
 include functions
 
@@ -12,7 +13,10 @@ proc get_var*(name: string, vars: seq[variable]): string =
   var x = 0
   while x < vars.len:
     if vars[x].name == name:
-      return vars[x].content
+      if vars[x].approx_content.len == 0:
+        return vars[x].content
+      else:
+        return compile_text(vars[x].approx_content, vars)[0]
     x+=1
   return "null"
 
@@ -23,7 +27,8 @@ proc add_var*(name: string, content: string, vars: seq[variable]): seq[variable]
   var found_var = false
   while x < vars.len:
     if vars[x].name == name:
-      output.add variable(name: vars[x].name, content: content)
+      output.add variable(name: vars[x].name, content: content,
+          approx_content: @[])
       found_var = true
     else:
       output.add vars[x]
@@ -31,7 +36,21 @@ proc add_var*(name: string, content: string, vars: seq[variable]): seq[variable]
   if not found_var:
     output.add variable(name: name, content: content)
   return output
-
+proc add_var*(name: string, content: seq[node], vars: seq[variable]): seq[variable] =
+  var
+    x = 0
+    output: seq[variable] = @[]
+  var found_var = false
+  while x < vars.len:
+    if vars[x].name == name:
+      output.add variable(name: vars[x].name, approx_content: content, content: "")
+      found_var = true
+    else:
+      output.add vars[x]
+    x+=1
+  if not found_var:
+    output.add variable(name: name, approx_content: content)
+  return output
 
 type if_stat = enum yes, no, nill
 
@@ -177,9 +196,12 @@ proc compile_text*(nodes: seq[node], vars: seq[variable]): (string, seq[variable
       output.add got[0]
       updated_vars = got[1]
     elif nodes[x].kind == nodetype.variable_decleration:
-      var got = compile_text(nodes[x].subvalues, updated_vars)
-      updated_vars = got[1]
-      updated_vars = add_var(nodes[x].name, got[0], updated_vars)
+      if not nodes[x].is_approx:
+        var got = compile_text(nodes[x].subvalues, updated_vars)
+        updated_vars = got[1]
+        updated_vars = add_var(nodes[x].name, got[0], updated_vars)
+      else:
+        updated_vars = add_var(nodes[x].name, nodes[x].subvalues, updated_vars)
     x+=1
   return (output, updated_vars)
 
@@ -202,15 +224,27 @@ proc exec_function(input: node, vars: seq[variable]): string =
         if cur_unnamed_var >= current_function.fnvars.len:
           fatal "too many anonymous arguments " & input.pos
         var vname = current_function.fnvars[cur_unnamed_var].name
-        var got = ""
-        (got, updated_vars) = compile_text(arg.content, updated_vars)
-        updated_vars = add_var(vname, got, updated_vars)
+        if not current_function.fnvars[cur_unnamed_var].is_approx:
+          var got = ""
+          (got, updated_vars) = compile_text(arg.content, updated_vars)
+          updated_vars = add_var(vname, got, updated_vars)
+        else:
+          updated_vars = add_var(vname, arg.content, updated_vars)
         cur_unnamed_var+=1
       else:
         var vname = arg.name
-        var got = ""
-        (got, updated_vars) = compile_text(arg.content, updated_vars)
-        updated_vars = add_var(vname, got, updated_vars)
+        var is_novel = -1
+        var x = 0
+        while x < current_function.fnvars.len:
+          if current_function.fnvars[x].name == vname:
+            is_novel = x
+          x+=1
+        if is_novel == -1 or (not current_function.fnvars[is_novel].is_approx):
+          var got = ""
+          (got, updated_vars) = compile_text(arg.content, updated_vars)
+          updated_vars = add_var(vname, got, updated_vars)
+        else:
+          updated_vars = add_var(vname, arg.content, updated_vars)
     var got = ""
     (got, updated_vars) = compile_text(input.fncontents, updated_vars)
     updated_vars = add_var("input", got, updated_vars)
