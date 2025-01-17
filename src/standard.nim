@@ -158,7 +158,16 @@ func text(){
     }
 
     elif (and(eql($format, markdown), eql($input[$text_iter], `\\`))){
-      `\\`
+      `\\\\`
+    }
+    elif (and(eql($format, markdown), eql($input[$text_iter], `*`))){
+      `\\*`
+    }
+    elif (and(eql($format, markdown), eql($input[$text_iter], `#`))){
+      `\\#`
+    }
+    elif (and(eql($format, markdown), eql($input[$text_iter], `_`))){
+      `\\_`
     }
     elif (and(eql($format, html), eql($input[$text_iter], `<`))){
       `&lt;`

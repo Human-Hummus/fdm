@@ -1,53 +1,40 @@
 #THIS IS INCLUDED IN EXECUTE.NIM
 
-proc compile_text*(nodes: seq[node], vars: seq[variable]): (string, seq[variable])
-proc get_var*(name: string, vars: seq[variable]): string
-
-proc or_function*(input: node, vars: seq[variable]): (string, seq[variable]) =
-  var
-    updated_vars = vars
+proc or_function*(input: node, vars: var seq[variable]): string =
   if input.fncontents.len != 0:
     warn "or function has function contents. These will be ignored. " & input.pos
   for item in input.fnvars:
     var got = ""
-    (got, updated_vars) = compile_text(item.content, updated_vars)
+    got = compile_text(item.content, vars)
     if got == "true":
-      return ("true", updated_vars)
-  return ("false", updated_vars)
+      return "true"
+  return "false"
 
-proc equals*(input: node, vars: seq[variable]): (string, seq[variable]) =
-  var
-    updated_vars = vars
+proc equals*(input: node, vars: var seq[variable]): string =
   if input.fnvars.len != 2:
     fatal "illegal eql statement; got " & $input.subvalues.len &
         " arguments instead of 2 " & input.pos
   var
-    a = ""
-    b = ""
-  (a, updated_vars) = compile_text(input.fnvars[0].content, updated_vars)
-  (b, updated_vars) = compile_text(input.fnvars[1].content, updated_vars)
+    a = compile_text(input.fnvars[0].content, vars)
+    b = compile_text(input.fnvars[1].content, vars)
   if a == b:
-    return ("true", updated_vars)
-  return ("false", updated_vars)
-proc sum_function*(input: node, vars: seq[variable]): (string, seq[variable]) =
-  var
-    updated_vars = vars
-    total = 0
+    return "true"
+  return "false"
+proc sum_function*(input: node, vars: var seq[variable]): string =
+  var total = 0
   for item in input.fnvars:
-    var got = ""
-    (got, updated_vars) = compile_text(item.content, updated_vars)
+    var got = compile_text(item.content, vars)
     try:
       total+=parseInt(got)
     except:
-      return ("ERROR", updated_vars)
-  return ($total, updated_vars)
+      return "ERROR"
+  return $total
 
 proc force_hyphenate(text: string): string =
   return text.replace(" ", "\\- ")
-proc table*(input: node, vars: seq[variable]): (string, seq[variable]) =
+proc table*(input: node, vars: var seq[variable]): string =
   var
-    format = get_var("format", vars)
-    updated_vars = vars
+    format = vars.get_var("format")
     got = ""
     x = 0
     output = ""
@@ -76,7 +63,7 @@ proc table*(input: node, vars: seq[variable]): (string, seq[variable]) =
     var row = row_generic.content[0]
     for item in row.fnvars:
       completed+=1
-      (got, updated_vars) = compile_text(item.content, updated_vars)
+      got = compile_text(item.content, vars)
       if format == "html":
         output.add "<td>" & got & "</td>"
       if format == "markdown":
@@ -108,12 +95,11 @@ proc table*(input: node, vars: seq[variable]): (string, seq[variable]) =
     output.add "\n"
   if format == "latex":
     output.add "\\end{tabular}"
-  return (output, updated_vars)
-proc list*(input: node, vars: seq[variable]): (string, seq[variable]) =
+  return output
+proc list*(input: node, vars: var seq[variable]): string =
   var
-    format = get_var("format", vars)
+    format = vars.get_var("format")
     output = ""
-    updated_vars = vars
     got = ""
   if format == "html":
     output.add "<ul style=\"margin-left:5%;\">"
@@ -122,7 +108,7 @@ proc list*(input: node, vars: seq[variable]): (string, seq[variable]) =
   if format == "latex":
     output.add "\\begin{itemize}"
   for item in input.fnvars:
-    (got, updated_vars) = compile_text(item.content, updated_vars)
+    got = compile_text(item.content, vars)
     if format == "html":
       output.add "<li>" & got & "</li>"
     if format == "latex":
@@ -135,13 +121,11 @@ proc list*(input: node, vars: seq[variable]): (string, seq[variable]) =
     output.add "\n"
   if format == "latex":
     output.add "\\end{itemize}"
-  return (output, updated_vars)
+  return output
 
-proc and_function*(input: node, vars: seq[variable]): (string, seq[variable]) =
-  var updated_vars = vars
+proc and_function*(input: node, vars: var seq[variable]): string =
   for item in input.fnvars:
-    var got = ""
-    (got, updated_vars) = compile_text(item.content, updated_vars)
+    var got = compile_text(item.content, vars)
     if got != "true":
-      return ("false", updated_vars)
-  return ("true", updated_vars)
+      return "false"
+  return "true"
