@@ -25,7 +25,7 @@ when isMainModule:
         if not (x < args.len):
           fatal "format not followed by argument"
         format = args[x]
-      of "--bench":
+      of "--bench", "-b":
         echotimes = true
     x+=1
   if filein.len < 1:

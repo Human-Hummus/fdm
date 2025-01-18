@@ -115,8 +115,7 @@ proc tokenizer*(input, filename: string): seq[token] =
         x+=1
       if x == input.len:
         fatal "Unterminated string " & starts_at
-      output.add token(kind: tokentype.text, value: buffer, pos: filename &
-          ":" & $line_number)
+      output.add token(kind: tokentype.text, value: buffer, pos: starts_at)
     elif input[x] == '"':
       var starts_at = filename & ":" & $line_number
       x+=1
@@ -141,8 +140,10 @@ proc tokenizer*(input, filename: string): seq[token] =
         x+=1
       if x == input.len:
         fatal "Unterminated string " & starts_at
-      output.add token(kind: tokentype.text, value: buffer, pos: filename &
-          ":" & $line_number)
+      output.add token(kind: tokentype.id, value: "text", pos: starts_at)
+      output.add token(kind: tokentype.curly, value: "{", pos: starts_at)
+      output.add token(kind: tokentype.text, value: buffer, pos: starts_at)
+      output.add token(kind: tokentype.curly, value: "}", pos: starts_at)
     elif input[x] == '~':
       output.add token(kind: tokentype.tilda, value: "~", pos: filename &
           ":" & $line_number)

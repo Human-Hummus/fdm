@@ -1,32 +1,39 @@
 @std;
-$title=`FDM - Functional Document Maker`;
+$title="FDM - Functional Document Maker";
 body{
 	h1{$title}
-	p{`The functions in FDM are really more like macros, tbh
+	p{"The functions in FDM are really more like macros, tbh
 	FDM, standing for Functional Document Maker (creative, I know), is a document maker that is more of a programming language than any other document fomat.
-	You can create and call functions. There is a standard library of functions, defined in \`src/standard.nim\`.`}
-	h1{`Available functions`}
+	You can create and call functions. There is a standard library of functions, defined in `src/standard.nim`."}
+	h1{"CLI args"}
+	table{
+		row("Signature", "Shorthand", "Explaination"),
+		row("--input <file>", "-i <file>", "Set input file to <file>"),
+		row("--output <file>", "-o <file>", "Set output file to <file>"),
+		row("--format <format>", "-f <format>", "Set the output format to <format>")
+	}
+	h1{"Available functions"}
 	p{"Note that you must import std in order to access all of the following functions."}
-	h2{`Built-in functions`}
+	h2{"Built-in functions"}
 	table(
-		row(text{`signature`}, text{`explaination`}),
-		row(text{`table(<rows>)`}, text{`Structure for a table make a table like follows table(row(a,b,c),row(d,e,f)).`}),
-		row(text{`row(<items>)`}, text{`used in table() as described above`}),
-		row(text{`list(<items>)`}, text{`returns the arguments organized as a list`}),
-		row(text{`if(<true or false>){<content>}`},text{`checks if the argument provided is true, and if it is, it'll return <content>`}),
-		row(text{`else{<content>}`},text{`Returns <content> if the above if statement and elif statements are false.`}),
-		row(text{`sum(<items>)`}, text{`Adds numbers within and returns the value. returns ERROR if the inner values aren't numbers. Must be integers.`}),
-		row(text{`sub{<content>}`}, text{`Returns the subscripted <content>`}),
-		row(text{`sup{<content>}`}, text{`Returns the superscripted <content>`}),
-		row(text{"text{<content>}", text{"Returns <content> formatted in a way such that all characters will be displayed as-is in the output"}),
-		row(text{`frac(<numerator>, <denominator>)`}, text{`Returns a formatted fraction of the two values. Especially useful when compiling to latex`}),
+		row("signature", "explaination"),
+		row("table(<rows>)", "Structure for a table make a table like follows table(row(a,b,c),row(d,e,f))."),
+		row("row(<items>)", "used in table() as described above"),
+		row("list(<items>)", "returns the arguments organized as a list"),
+		row("if(<true or false>){<content>}","checks if the argument provided is true, and if it is, it'll return <content>"),
+		row("else{<content>}","Returns <content> if the above if statement and elif statements are false."),
+		row("sum(<items>)", "Adds numbers within and returns the value. returns ERROR if the inner values aren't numbers. Must be integers."),
+		row("text{<content>}", "Returns <content> formatted in a way such that all characters will be displayed as-is in the output"),
+		row("frac(<numerator>, <denominator>)", "Returns a formatted fraction of the two values. Especially useful when compiling to latex, as HTML and Markdown don't support recursive fractions."),
 	)
 	h2{`standard library functions`}
 	table(
 		row(signature, explaination),
-		row(text{`link(<URL>){<content>}`}, text{`Makes a link to <URL> with <content> as the text`})
+		row("sub{<content>}", "Returns the subscripted <content>"),
+		row("sup{<content>}", "Returns the superscripted <content>"),
+		row("link(<URL>){<content>}", "Makes a link to <URL> with <content> as the text")
 	)
-	h2{`Standard Library Variables`}
+	h2{"Standard Library Variables"}
 	h3{"Math Symbols"}
 	table(
 		row("mult", $mult),
