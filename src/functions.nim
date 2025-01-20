@@ -129,3 +129,32 @@ proc and_function*(input: node, vars: var seq[variable]): string =
     if got != "true":
       return "false"
   return "true"
+
+proc text*(input: string, vars: var seq[variable]): string =
+  var
+    format = vars.get_var("format")
+    output = ""
+  for c in input:
+    case format:
+      of "html":
+        case c:
+          of '\n': output.add "<br>"
+          of '<': output.add "&lt;"
+          of '>': output.add "&gt;"
+          of '&': output.add "&amp;"
+          else: output.add c
+      of "markdown":
+        case c:
+          of '\n': output.add "\n"
+          of '<': output.add "\\<"
+          of '>': output.add "\\>"
+          of '\\': output.add "\\\\"
+          of '*': output.add "\\*"
+          of '#': output.add "\\#"
+          of '_': output.add "\\_"
+          else: output.add c
+      of "latex":
+        case c:
+          of '\n': output.add "\n"
+          else: output.add c
+  return output

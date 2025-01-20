@@ -150,46 +150,6 @@ func center(){
     }
 }
 
-func text(){
-  $text_iter=0;
-  while (not(eql($text_iter, len($input)))){
-    if (eql($input[$text_iter], `\n`)){
-      newline()
-    }
-
-    elif (and(eql($format, markdown), eql($input[$text_iter], `\\`))){
-      `\\\\`
-    }
-    elif (and(eql($format, markdown), eql($input[$text_iter], `*`))){
-      `\\*`
-    }
-    elif (and(eql($format, markdown), eql($input[$text_iter], `#`))){
-      `\\#`
-    }
-    elif (and(eql($format, markdown), eql($input[$text_iter], `_`))){
-      `\\_`
-    }
-    elif (and(eql($format, html), eql($input[$text_iter], `<`))){
-      `&lt;`
-    }
-    elif (and(eql($format, html), eql($input[$text_iter], `>`))){
-      `&gt;`
-    }
-        elif (and(eql($format, html), eql($input[$text_iter], `&`))){
-      `&amp;`
-    }
-    elif (and(eql($format, markdown), eql($input[$text_iter], `<`))){
-      `\\<`
-    }
-    elif (and(eql($format, markdown), eql($input[$text_iter], `>`))){
-      `\\>`
-    }
-    else{
-      $input[$text_iter]
-    }
-    $text_iter=sum($text_iter, 1);
-  }
-}
 
 
 func quote(){
@@ -279,6 +239,14 @@ func sub(){
         `_{`$input`}`
     }
 }
+func code(){
+  if (eql($format, html)){
+    `<code>`$input`</code>`
+  }
+  elif (eql($format, markdown)){
+    `\``$input`\``
+  }
+}
 
 
 func frac(~a,~b){
@@ -304,6 +272,7 @@ $sqrt="√";
 $noteq="≠";
 $approxeq="≈";
 $theta="θ";
+$interrobang="‽";
 
 if (eql($format, latex)){
   $mult = "\\(\\times\\)";
@@ -324,6 +293,7 @@ if (eql($format, latex)){
     if (not($within_math_scope)){"$"}
     "\\muptheta"
     if (not($within_math_scope)){"$"};
+  $interrobang="!?";
 }
 
 """

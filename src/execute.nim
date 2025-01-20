@@ -107,6 +107,9 @@ proc compile_text*(nodes: seq[node], vars: var seq[variable]): string =
             prev_if_statement = if_stat.yes
           else:
             prev_if_statement = if_stat.no
+      elif nodes[x].name == "text":
+        got = text(compile_text(nodes[x].fncontents, vars), vars)
+        output.add got
 
       elif nodes[x].name == "eql":
         got = equals(nodes[x], vars)
