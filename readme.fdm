@@ -45,5 +45,9 @@ body{
 		
 	)
 	h1{"Compiling/installing"}
-	p{"To compile, run nimble build -d:release -d:ssl, and copy the newly created \"fdm\" file to your $PATH."}
+	p{"To compile, run the following command and copy the newly created \"fdm\" file to your $PATH."}
+	code{"nimble build -d:release -d:ssl"}
+	p{"If you want to compile to Javascript, run the following command, and you'll have a nice fdm.js file"}
+	code{"nim js -d=release -d=ssl -o=./fdm.js src/fdm.nim"}
+	p{"Note That error messages will not have color and you can't import remote files in the Javascript version."}
 }

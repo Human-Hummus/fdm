@@ -154,6 +154,10 @@ proc parser*(input: seq[token]): seq[node] =
         if x >= input.len or input[x].kind != paren:
           fatal "Illegal function decleration, " & pos
         x+=1
+        is_approx = false
+        if x < input.len and input[x].kind == tilda:
+          is_approx = true
+          x+=1
         if x >= input.len or input[x].kind != curly:
           fatal "Illegal function decleration " & pos
         x+=1
@@ -172,7 +176,8 @@ proc parser*(input: seq[token]): seq[node] =
         if input[x].value != "}":
           fatal "illegal function; unterminated " & pos
         functions.add node(kind: function, name: name, fnvars: args,
-            fncontents: parser(fncontent), pos: pos)
+                           fncontents: parser(fncontent), pos: pos,
+                               is_approx: is_approx)
       else:
         if x+1 < input.len and input[x+1].kind in @[paren, curly] and input[
             x+1].value in "({":

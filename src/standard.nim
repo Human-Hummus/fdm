@@ -223,22 +223,41 @@ func p(){
   $output
 }
 
-func sup(){
+func sup()~{
   if (or(eql($format, html), eql($format, markdown))){
     `<sup>`$input`</sup>`
   }
     if (eql($format, latex)){
+      if (not($within_math_scope)){
+        "$" 
+        $within_math_scope=true;
         `^{`$input`}`
+        "$"
+        $within_math_scope=false;
+      }
+      else{
+        `^{`$input`}`
+      }
     }
 }
-func sub(){
+func sub()~{
   if (or(eql($format, html), eql($format, markdown))){
     `<sub>`$input`</sub>`
   }
     if (eql($format, latex)){
+      if (not($within_math_scope)){
+        "$" 
+        $within_math_scope=true;
         `_{`$input`}`
+        "$"
+        $within_math_scope=false;
+      }
+      else{
+        `_{`$input`}`
+      }
     }
 }
+
 func code(){
   if (eql($format, html)){
     `<code>`$input`</code>`

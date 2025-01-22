@@ -1,8 +1,16 @@
-import system, terminal
+import system
+
+when not defined(js):
+  import terminal
 proc fatal*(text: string) =
-  stderr.styledWriteLine(fgred, "ERROR: " & text, fgdefault)
+  when not defined(js):
+    stderr.styledWriteLine(fgred, "ERROR: " & text, fgdefault)
+  else:
+    echo "ERROR:" & text
   quit 1
 
 proc warn*(text: string) =
-  stderr.styledWriteLine(fgyellow, "warning: " & text, fgdefault)
+  when not defined(js):
+    stderr.styledWriteLine(fgyellow, "Warning: " & text, fgdefault)
+  echo "Warning: " & text
 

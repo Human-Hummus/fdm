@@ -1,5 +1,6 @@
 import strutils, sequtils, error, strformat
-import std/httpclient
+when not defined(js):
+  import std/httpclient
 include standard #include the FDM standard lib
 
 var files_completed: seq[string] = @[]
@@ -42,17 +43,18 @@ proc tokenizer*(input, filename: string): seq[token] =
       if "std" in buffer:
         filecontents = stdlib
       elif "https://" in buffer:
-        var got = ""
-        var client = newHttpClient()
-        try:
-          got = client.getContent(buffer)
-        except:
-          got = "ERROR"
-        finally:
-          client.close()
-        if got == "ERROR":
-          warn fmt"Failed to retrieve {buffer}"
-        filecontents = got
+        when not defined(js):
+          var got = ""
+          var client = newHttpClient()
+          try:
+            got = client.getContent(buffer)
+          except:
+            got = "ERROR"
+          finally:
+            client.close()
+          if got == "ERROR":
+            warn fmt"Failed to retrieve {buffer}"
+          filecontents = got
 
       else:
         filecontents = readFile(get_path(filename) & buffer)

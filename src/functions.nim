@@ -112,7 +112,7 @@ proc list*(input: node, vars: var seq[variable]): string =
     if format == "html":
       output.add "<li>" & got & "</li>"
     if format == "latex":
-      output.add "\\item "
+      output.add "\\item " & got
     if format == "markdown":
       output.add "- " & got.replace("\n", "\n\t") & "\n"
   if format == "html":

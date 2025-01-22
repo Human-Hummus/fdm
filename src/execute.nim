@@ -231,9 +231,12 @@ proc exec_function(input: node, vars: seq[variable]): string =
           updated_vars.add_var(vname, got)
         else:
           updated_vars.add_var(vname, arg.content)
-    var got = compile_text(input.fncontents, updated_vars)
-    updated_vars.add_var("input", got)
+    if input.is_approx:
+      updated_vars.add_var("input", input.fncontents)
+    else:
+      var got = compile_text(input.fncontents, updated_vars)
+      updated_vars.add_var("input", got)
 
-    got = compile_text(current_function.fncontents, updated_vars)
+    var got = compile_text(current_function.fncontents, updated_vars)
     return got
   return "null"
