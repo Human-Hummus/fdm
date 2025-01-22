@@ -73,6 +73,10 @@ proc tokenizer*(input, filename: string): seq[token] =
         output.add token(kind: tokentype.id, value: buffer, pos: filename &
             ":" & $line_number)
       x-=1
+    elif input[x] == '#':
+      while x < input.len and input[x] != '\n':
+        x+=1
+      x-=1
     elif input[x] in "()":
       output.add token(kind: tokentype.paren, value: $input[x], pos: filename &
           ":" & $line_number)

@@ -64,7 +64,6 @@ when defined(js):
   proc compile_text_js(text, format: cstring): cstring {.exportc.} =
     var tokens = tokenizer($text, "head")
     var parsed = parser(tokens)
-    echo parsed
     var default_vars = @[execute.variable(name: "format", content: $format)]
     var executed = compile_text(parsed, default_vars)
-    return executed;
+    return executed
