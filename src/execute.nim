@@ -76,11 +76,9 @@ proc compile_text*(nodes: seq[node], vars: var seq[variable]): string =
       if nodes[x].name == "if":
         if nodes[x].fnvars.len != 1:
           fatal "Illegal if statement " & pos
-
         got = compile_text(nodes[x].fnvars[0].content, vars)
         if got == "true":
-          var got = compile_text(nodes[x].fncontents, vars)
-          output.add got
+          output.add compile_text(nodes[x].fncontents, vars)
           prev_if_statement = if_stat.yes
         else:
           prev_if_statement = if_stat.no
@@ -90,8 +88,7 @@ proc compile_text*(nodes: seq[node], vars: var seq[variable]): string =
         if prev_if_statement == if_stat.nill:
           fatal "Else statement not preceeded by if statement. " & pos
         if prev_if_statement == if_stat.no:
-          got = compile_text(nodes[x].fncontents, vars)
-          output.add got
+          output.add compile_text(nodes[x].fncontents, vars)
         prev_if_statement = if_stat.nill
 
       elif nodes[x].name == "elif":
@@ -102,31 +99,22 @@ proc compile_text*(nodes: seq[node], vars: var seq[variable]): string =
         if prev_if_statement == if_stat.no:
           got = compile_text(nodes[x].fnvars[0].content, vars)
           if got == "true":
-            got = compile_text(nodes[x].fncontents, vars)
-            output.add got
+            output.add compile_text(nodes[x].fncontents, vars)
             prev_if_statement = if_stat.yes
           else:
             prev_if_statement = if_stat.no
       elif nodes[x].name == "text":
-        got = text(compile_text(nodes[x].fncontents, vars), vars)
-        output.add got
-
+        output.add text(compile_text(nodes[x].fncontents, vars), vars)
       elif nodes[x].name == "eql":
-        got = equals(nodes[x], vars)
-        output.add got
-
+        output.add equals(nodes[x], vars)
       elif nodes[x].name == "sum":
-        got = sum_function(nodes[x], vars)
-        output.add got
+        output.add sum_function(nodes[x], vars)
       elif nodes[x].name == "table":
-        got = table(nodes[x], vars)
-        output.add got
+        output.add table(nodes[x], vars)
       elif nodes[x].name == "list":
-        got = list(nodes[x], vars)
-        output.add got
+        output.add list(nodes[x], vars)
       elif nodes[x].name == "fatal":
-        got = compile_text(nodes[x].fnvars[0].content, vars)
-        fatal got
+        fatal compile_text(nodes[x].fnvars[0].content, vars)
       elif nodes[x].name == "and":
         got = and_function(nodes[x], vars)
         output.add got
@@ -151,8 +139,7 @@ proc compile_text*(nodes: seq[node], vars: var seq[variable]): string =
         if nodes[x].fnvars.len != 1:
           fatal "illegal not statement; got " & $nodes[x].fnvars.len &
               " arguments instead of 1 " & pos
-        got = compile_text(nodes[x].fnvars[0].content, vars)
-        output.add $got.len
+        output.add $compile_text(nodes[x].fnvars[0].content, vars).len
 
       elif nodes[x].name == "while":
         if nodes[x].fnvars.len != 1:
@@ -162,8 +149,7 @@ proc compile_text*(nodes: seq[node], vars: var seq[variable]): string =
           got = compile_text(nodes[x].fnvars[0].content, vars)
           if got != "true":
             break
-          got = compile_text(nodes[x].fncontents, vars)
-          output.add got
+          output.add compile_text(nodes[x].fncontents, vars)
           iterations+=1
         if iterations == max_iters:
           fatal "While loop exceeded maximum iteration number: " & $max_iters &
@@ -178,13 +164,11 @@ proc compile_text*(nodes: seq[node], vars: var seq[variable]): string =
         got = or_function(nodes[x], vars)
         output.add got
       else:
-        var got = exec_function(nodes[x], vars)             #doesn't modify vars
-        output.add got
+        output.add exec_function(nodes[x], vars) #doesn't modify vars
     elif nodes[x].kind == nodetype.variable:
       output.add vars.get_var nodes[x].name
     elif nodes[x].kind == nodetype.generic:
-      var got = compile_text(nodes[x].subvalues, vars)
-      output.add got
+      output.add compile_text(nodes[x].subvalues, vars)
     elif nodes[x].kind == nodetype.variable_decleration:
       if not nodes[x].is_approx:
         var got = compile_text(nodes[x].subvalues, vars)
@@ -239,4 +223,5 @@ proc exec_function(input: node, vars: seq[variable]): string =
 
     var got = compile_text(current_function.fncontents, updated_vars)
     return got
+  warn "function " & input.name & " failed to execute"
   return "null"

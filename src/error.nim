@@ -12,5 +12,6 @@ proc fatal*(text: string) =
 proc warn*(text: string) =
   when not defined(js):
     stderr.styledWriteLine(fgyellow, "Warning: " & text, fgdefault)
-  echo "Warning: " & text
+  else:
+    echo "Warning: " & text
 

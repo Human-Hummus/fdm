@@ -29,6 +29,7 @@ proc tokenizer*(input, filename: string): seq[token] =
     line_number = 1
     line_pos = 1
   while x < input.len():
+    var starts_at = filename & ":" & $line_number
     if input[x] == '@':
       x += 1
       if not (x < input.len):
@@ -40,6 +41,10 @@ proc tokenizer*(input, filename: string): seq[token] =
       if not (x < input.len):
         fatal fmt"'@{buffer}' not followed by semicolon"
       var filecontents = ""
+      var is_text = false
+      if buffer[0] == '!':
+        buffer = buffer[1..^1]
+        is_text = true
       if "std" in buffer:
         filecontents = stdlib
       elif "https://" in buffer:
@@ -58,8 +63,12 @@ proc tokenizer*(input, filename: string): seq[token] =
 
       else:
         filecontents = readFile(get_path(filename) & buffer)
-      output = concat(output, tokenizer(filecontents, get_path(filename) &
-          buffer));
+      if is_text:
+        output.add token(kind: tokentype.text, value: filecontents,
+            pos: starts_at)
+      else:
+        output = concat(output, tokenizer(filecontents, get_path(filename) &
+            buffer));
     elif input[x] in IdentChars:
       var buffer = ""
       while x < input.len and input[x] in IdentChars:
@@ -97,7 +106,6 @@ proc tokenizer*(input, filename: string): seq[token] =
     elif input[x] == '=':
       output.add token(kind: tokentype.equals, value: "=", pos: filename & ":" & $line_number)
     elif input[x] == '`':
-      var starts_at = filename & ":" & $line_number
       x+=1
       var buffer = ""
       while x < input.len and input[x] != '`':
@@ -123,7 +131,6 @@ proc tokenizer*(input, filename: string): seq[token] =
         fatal "Unterminated string " & starts_at
       output.add token(kind: tokentype.text, value: buffer, pos: starts_at)
     elif input[x] == '"':
-      var starts_at = filename & ":" & $line_number
       x+=1
       var buffer = ""
       while x < input.len and input[x] != '"':
