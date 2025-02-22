@@ -2,9 +2,20 @@
 $title="FDM - Functional Document Maker";
 body{
 	h1{$title}
+	p{"THIS DOCUMENTATION IS GROSSLY INCOMPLETE"}
 	p{"The functions in FDM are really more like macros, tbh
 	FDM, standing for Functional Document Maker (creative, I know), is a document maker that is more of a programming language than any other document fomat.
 	You can create and call functions. There is a standard library of functions, defined in `src/standard.nim`."}
+	h1{"Creating/Calling Functions"}
+	p{"To create a function you first type the \"func\" keyword, then the function's name, then, in parenthesis, the function's arguments' names seperated by commas. Then, the contents of the function surrounded by curly brackets. This is quite similar to how functions are defined in some programming languages, like C and Python. It would look like this:"}
+	code{"func my_function(a,b){\"I recieved argument a as \" $a \"!\"}"}
+	newline()
+	p{"Calling functions is identical to how you'd call functions in Python, C, and countless other programming languages: the name of the function followed by the arguments, sperated by commas, surrounded by parenthesis. This is followed by the function \"input\" surrounded by curly brackets. To call the above function, you could write, for example:"}
+	code{"my_function(This_is_a, this_is_b){the_input}"}
+	newline()
+	p{"For more examples, review the standard library, found in " link(`https://github.com/Human-Hummus/fdm/blob/main/src/standard.nim`){"src/standard.nim"}}
+	h1{"Variables"}
+	h2{"TODO"}
 	h1{"CLI args"}
 	table{
 		row("Signature", "Shorthand", "Explaination"),
@@ -47,6 +58,11 @@ body{
 	h1{"Compiling/installing"}
 	p{"To compile, run the following command and copy the newly created \"fdm\" file to your $PATH."}
 	code{"nimble build -d:release -d:ssl"}
+	newline()
+	"OR"
+	newline()
+	code{"nimble build -d:release -d:openssl"}
+	", if the previous build fails"
 	p{"If you want to compile to Javascript, run the following command, and you'll have a nice fdm.js file"}
 	code{"nim js -d=release -d=ssl -o=./fdm.js src/fdm.nim"}
 	p{"Note That error messages will not have color and you can't import remote files in the Javascript version."}
